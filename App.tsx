@@ -77,14 +77,18 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (currentPage !== 'home') {
-        setShowNavbar(false);
+      // For project detail, the navbar must always be resident (常驻)
+      if (currentPage === 'project-detail') {
+        setShowNavbar(true);
         return;
       }
+      
       const portfolioSection = document.getElementById('portfolio-section');
       if (portfolioSection) {
         const portfolioTop = portfolioSection.offsetTop;
         setShowNavbar(window.scrollY > portfolioTop - 100);
+      } else {
+        setShowNavbar(false);
       }
     };
 
@@ -121,7 +125,6 @@ const App: React.FC = () => {
     setActiveTab(newLang === 'en' ? 'All' : '全部');
   };
 
-  // Fixed missing articles property in translations
   const translations = {
     zh: {
       hero: ["设计之道", "归于", "自然 ."],
@@ -203,15 +206,11 @@ const App: React.FC = () => {
     }
   }[language];
 
-  if (currentPage === 'project-detail' && selectedProjectId === 'project-1') {
-    return (
-      <ProjectDetail 
-        language={language} 
-        onBack={() => { setCurrentPage('home'); window.scrollTo(0, 0); }}
-        onContactClick={() => setIsContactModalOpen(true)}
-      />
-    );
-  }
+  const goBack = () => {
+    setCurrentPage('home');
+    setSelectedProjectId(null);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
 
   return (
     <main className="relative min-h-screen bg-white text-black">
@@ -222,183 +221,182 @@ const App: React.FC = () => {
         language={language}
         onLanguageToggle={toggleLanguage}
         onContactClick={() => setIsContactModalOpen(true)}
+        projectTitle={currentPage === 'project-detail' ? "GPU CONTAINER SERVICE" : undefined}
+        onBack={goBack}
       />
       
-      {/* Hero Section */}
-      <section id="home-section" className="relative min-h-screen flex flex-col px-6 md:px-12 pt-[42px] pb-12 overflow-hidden">
-        <BouncingPhoto />
-        
-        <div className="z-20">
-          <h1 className="font-huge text-[15vw] md:text-[12rem] uppercase leading-[0.85] tracking-tighter select-none">
-            <span className="block">{translations.hero[0]}</span>
-            <span className="block">{translations.hero[1]}</span>
-            <span className="block">{translations.hero[2]}</span>
-          </h1>
-        </div>
-
-        {/* Status Bar */}
-        <div className="z-20 flex justify-between items-center mt-8 mb-12">
-          <div className="flex gap-2">
-            <button 
-              onClick={() => handlePageChange('portfolio')}
-              className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive"
-            >
-              {translations.navItems.portfolio}
-            </button>
-            <button 
-              onClick={() => handlePageChange('blog')}
-              className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive"
-            >
-              {translations.navItems.blog}
-            </button>
-          </div>
-          
-          <div className="flex">
-            <div className="px-6 py-2 bg-[#f0f2f4] rounded-full text-sm font-medium flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              {translations.jobStatus}
+      {currentPage === 'project-detail' && selectedProjectId === 'project-1' ? (
+        <ProjectDetail 
+          language={language} 
+          onBack={goBack}
+          onContactClick={() => setIsContactModalOpen(true)}
+        />
+      ) : (
+        <>
+          {/* Hero Section */}
+          <section id="home-section" className="relative min-h-screen flex flex-col px-6 md:px-12 pt-[42px] pb-12 overflow-hidden">
+            <BouncingPhoto />
+            
+            <div className="z-20">
+              <h1 className="font-huge text-[15vw] md:text-[12rem] uppercase leading-[0.85] tracking-tighter select-none">
+                <span className="block">{translations.hero[0]}</span>
+                <span className="block">{translations.hero[1]}</span>
+                <span className="block">{translations.hero[2]}</span>
+              </h1>
             </div>
-          </div>
-        </div>
 
-        <div className="z-20 flex justify-end mt-auto mb-12">
-          <div className="max-w-xs md:max-w-md">
-            <p className="text-base md:text-xl leading-[1.3] text-black font-bold">
-              {translations.intro}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Portfolio Grid Section */}
-      <section id="portfolio-section" className="px-6 md:px-12 mb-32 pt-20">
-        <div className="flex items-center gap-4 mb-10 border-t pt-10 border-gray-100">
-          {translations.tabs.map(tab => (
-            <button 
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
-                activeTab === tab ? 'bg-black text-white' : 'bg-white text-black border border-gray-200 hover:border-black'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div 
-              key={i} 
-              onClick={() => i === 1 && openProject('project-1')}
-              className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive"
-            >
-              <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="absolute bottom-10 left-10 transition-transform duration-500 group-hover:translate-x-2">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i}</p>
-                <h3 className="text-2xl font-bold">
-                  {i === 1 ? 'GPU Container Service' : translations.project + ' ' + i}
-                </h3>
+            {/* Status Bar */}
+            <div className="z-20 flex justify-between items-center mt-8 mb-12">
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => handlePageChange('portfolio')}
+                  className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive"
+                >
+                  {translations.navItems.portfolio}
+                </button>
+                <button 
+                  onClick={() => handlePageChange('blog')}
+                  className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive"
+                >
+                  {translations.navItems.blog}
+                </button>
               </div>
-              <div className="absolute top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
-                <div className="w-12 h-12 rounded-full border border-black flex items-center justify-center">
-                  <svg className="w-6 h-6 -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
+              
+              <div className="flex">
+                <div className="px-6 py-2 bg-[#f0f2f4] rounded-full text-sm font-medium flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  {translations.jobStatus}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Blog Section */}
-      <section id="blog-section" className="px-6 md:px-12 border-t border-gray-100 pt-32 mb-40">
-        <div className="flex justify-between items-end mb-16">
-          <h2 className="text-6xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
-          <button className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors interactive">
-            View All Thoughts →
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {[
-            {
-              tag: translations.articles[0].tag,
-              date: translations.articles[0].date,
-              title: translations.articles[0].title,
-              desc: translations.articles[0].desc
-            },
-            {
-              tag: translations.articles[1].tag,
-              date: translations.articles[1].date,
-              title: translations.articles[1].title,
-              desc: translations.articles[1].desc
-            }
-          ].map((article, idx) => (
-            <article key={idx} className="group flex flex-col interactive">
-              <div className="flex justify-between items-center mb-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">
-                <span>{article.tag}</span>
-                <span>{article.date}</span>
+            <div className="z-20 flex justify-end mt-auto mb-12">
+              <div className="max-w-xs md:max-w-md">
+                <p className="text-base md:text-xl leading-[1.3] text-black font-bold">
+                  {translations.intro}
+                </p>
               </div>
-              <div className="mb-6 h-[1px] w-full bg-gray-100 group-hover:bg-black transition-colors duration-500"></div>
-              <h3 className="text-2xl font-bold leading-tight mb-4 group-hover:translate-x-1 transition-transform duration-500">
-                {article.title}
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed mb-8 line-clamp-2">
-                {article.desc}
-              </p>
-              <div className="mt-auto flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all group-hover:gap-4">
-                {translations.blogAction}
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+            </div>
+          </section>
 
-      {/* FAQ Section */}
-      <section className="bg-[#fcfcfc] py-40 px-6 md:px-12 border-t border-gray-100 w-full">
-        <div className="max-w-[1000px] mx-auto">
-          <h2 className="text-6xl md:text-8xl font-bold tracking-tight text-center mb-24">
-            {translations.faq.header}
-          </h2>
-
-          <div className="space-y-6">
-            {translations.faq.items.map((item, idx) => (
-              <div 
-                key={idx} 
-                className={`bg-white rounded-[40px] p-8 md:p-12 transition-all duration-700 border border-gray-100 hover:border-gray-200 interactive group`}
-                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-              >
-                <div className="flex justify-between items-center cursor-none">
-                  <h3 className="text-2xl md:text-3xl font-bold tracking-tight pr-12">
-                    {item.q}
-                  </h3>
-                  <div className={`w-14 h-14 rounded-full bg-[#f3f3f3] flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'group-hover:bg-gray-200'}`}>
-                    <span className={`text-3xl font-medium transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>
-                      {openFaq === idx ? '−' : '+'}
-                    </span>
-                  </div>
-                </div>
-                <div 
-                  className={`grid transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-                    openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-10' : 'grid-rows-[0fr] opacity-0'
+          {/* Portfolio Grid Section */}
+          <section id="portfolio-section" className="px-6 md:px-12 mb-32 pt-20">
+            <div className="flex items-center gap-4 mb-10 border-t pt-10 border-gray-100">
+              {translations.tabs.map(tab => (
+                <button 
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
+                    activeTab === tab ? 'bg-black text-white' : 'bg-white text-black border border-gray-200 hover:border-black'
                   }`}
                 >
-                  <div className="overflow-hidden">
-                    <p className="text-gray-500 text-xl leading-relaxed max-w-3xl">
-                      {item.a}
-                    </p>
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div 
+                  key={i} 
+                  onClick={() => i === 1 && openProject('project-1')}
+                  className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive"
+                >
+                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute bottom-10 left-10 transition-transform duration-500 group-hover:translate-x-2">
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i}</p>
+                    <h3 className="text-2xl font-bold">
+                      {i === 1 ? 'GPU Container Service' : translations.project + ' ' + i}
+                    </h3>
+                  </div>
+                  <div className="absolute top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
+                    <div className="w-12 h-12 rounded-full border border-black flex items-center justify-center">
+                      <svg className="w-6 h-6 -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Blog Section */}
+          <section id="blog-section" className="px-6 md:px-12 border-t border-gray-100 pt-32 mb-40">
+            <div className="flex justify-between items-end mb-16">
+              <h2 className="text-6xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
+              <button className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors interactive">
+                View All Thoughts →
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              {translations.articles.map((article, idx) => (
+                <article key={idx} className="group flex flex-col interactive">
+                  <div className="flex justify-between items-center mb-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">
+                    <span>{article.tag}</span>
+                    <span>{article.date}</span>
+                  </div>
+                  <div className="mb-6 h-[1px] w-full bg-gray-100 group-hover:bg-black transition-colors duration-500"></div>
+                  <h3 className="text-2xl font-bold leading-tight mb-4 group-hover:translate-x-1 transition-transform duration-500">
+                    {article.title}
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed mb-8 line-clamp-2">
+                    {article.desc}
+                  </p>
+                  <div className="mt-auto flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all group-hover:gap-4">
+                    {translations.blogAction}
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section className="bg-[#fcfcfc] py-40 px-6 md:px-12 border-t border-gray-100 w-full">
+            <div className="max-w-[1000px] mx-auto">
+              <h2 className="text-6xl md:text-8xl font-bold tracking-tight text-center mb-24">
+                {translations.faq.header}
+              </h2>
+
+              <div className="space-y-6">
+                {translations.faq.items.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`bg-white rounded-[40px] p-8 md:p-12 transition-all duration-700 border border-gray-100 hover:border-gray-200 interactive group`}
+                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  >
+                    <div className="flex justify-between items-center cursor-none">
+                      <h3 className="text-2xl md:text-3xl font-bold tracking-tight pr-12">
+                        {item.q}
+                      </h3>
+                      <div className={`w-14 h-14 rounded-full bg-[#f3f3f3] flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'group-hover:bg-gray-200'}`}>
+                        <span className={`text-3xl font-medium transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>
+                          {openFaq === idx ? '−' : '+'}
+                        </span>
+                      </div>
+                    </div>
+                    <div 
+                      className={`grid transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                        openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-10' : 'grid-rows-[0fr] opacity-0'
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="text-gray-500 text-xl leading-relaxed max-w-3xl">
+                          {item.a}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
+          </section>
+        </>
+      )}
 
       <ContactModal 
         isOpen={isContactModalOpen} 

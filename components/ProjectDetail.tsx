@@ -25,16 +25,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ language, onBack, onConta
         ? "A comprehensive GPU cloud orchestration platform designed for data scientists and AI researchers. The challenge was to abstract complex Kubernetes and NVIDIA driver management into a seamless, high-performance GUI."
         : "一个专为数据科学家和 AI 研究员设计的全方位 GPU 云编排平台。核心挑战在于将复杂的 Kubernetes 和 NVIDIA 驱动管理抽象为无缝、高性能的图形用户界面。"
     },
-    challenges: [
-      {
-        title: isEn ? "Complexity Reduction" : "降低复杂度",
-        desc: isEn ? "Data scientists shouldn't need to be DevOps experts to run an A100 cluster." : "数据科学家不应该为了运行 A100 集群而成为运维专家。"
-      },
-      {
-        title: isEn ? "Real-time Telemetry" : "实时遥测",
-        desc: isEn ? "Visualizing thermal throttling, memory leaks, and compute efficiency in real-time." : "实时可视化热节流、显存泄漏和计算效率。"
-      }
-    ],
     gallery: [
       { id: 1, title: isEn ? "Resource Dashboard" : "资源仪表盘" },
       { id: 2, title: isEn ? "Container Orchestration" : "容器编排" },
@@ -45,45 +35,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ language, onBack, onConta
 
   return (
     <div className="min-h-screen bg-white text-black animate-in fade-in duration-700">
-      {/* Project Navbar */}
-      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-[800px]">
-        <div className="h-[64px] bg-white/70 backdrop-blur-2xl border border-black/5 shadow-2xl rounded-full px-4 flex items-center justify-between">
-          <button 
-            onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2 hover:bg-black/5 rounded-full transition-colors interactive"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="text-sm font-bold">{content.back}</span>
-          </button>
-
-          <div className="absolute left-1/2 -translate-x-1/2 hidden md:block">
-            <h1 className="text-sm font-black uppercase tracking-widest opacity-40">{content.title}</h1>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => document.getElementById('screenshots')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-4 py-2 text-sm font-bold hover:text-gray-500 transition-colors hidden sm:block interactive"
-            >
-              {content.screenshots}
-            </button>
-            <button 
-              onClick={onContactClick}
-              className="bg-black text-white px-6 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 hover:bg-gray-800 transition-all active:scale-95 interactive"
-            >
-              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-              </svg>
-              {content.contact}
-            </button>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Content */}
-      <section className="pt-40 px-6 md:px-12 pb-32">
+      <section className="pt-48 px-6 md:px-12 pb-32">
         <h1 className="text-[12vw] md:text-[10rem] font-huge leading-[0.8] mb-20 tracking-tighter">
           GPU<br/>INFRA.
         </h1>
@@ -128,7 +81,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ language, onBack, onConta
                 <div className="absolute inset-0 flex items-center justify-center text-gray-300 font-bold uppercase tracking-widest">
                   [ Screenshot Placeholder 0{item.id} ]
                 </div>
-                {/* Image would go here: <img src="..." className="..." /> */}
               </div>
               <div className="flex justify-between items-center px-4">
                 <span className="text-sm font-black uppercase tracking-widest text-gray-400">Section 0{item.id}</span>
