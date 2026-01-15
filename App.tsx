@@ -77,7 +77,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // For project detail, the navbar must always be resident (常驻)
       if (currentPage === 'project-detail') {
         setShowNavbar(true);
         return;
@@ -194,7 +193,7 @@ const App: React.FC = () => {
         }
       ],
       faq: {
-        header: "Frequently Asked Questions",
+        header: "QUESTIONS",
         items: [
           { q: "What is your typical product design workflow?", a: "My workflow follows four main stages: Discovery & Research, Strategic Definition, Creative Execution, and Collaborative Handoff. I stick to a user-centric approach, ensuring data validation and iteration at every step." },
           { q: "What tools do you use for your design work?", a: "Figma is my primary tool for prototyping and design systems. I also use Adobe Creative Cloud (PS, AI, AE) for visual assets and Blender or Spline for 3D elements." },
@@ -341,7 +340,7 @@ const App: React.FC = () => {
                   <h3 className="text-2xl font-bold leading-tight mb-4 group-hover:translate-x-1 transition-transform duration-500">
                     {article.title}
                   </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-8 line-clamp-2">
+                  <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8 line-clamp-2">
                     {article.desc}
                   </p>
                   <div className="mt-auto flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all group-hover:gap-4">
@@ -356,36 +355,36 @@ const App: React.FC = () => {
           </section>
 
           {/* FAQ Section */}
-          <section className="bg-[#fcfcfc] py-40 px-6 md:px-12 border-t border-gray-100 w-full">
+          <section className="bg-white py-40 px-6 md:px-12 w-full">
             <div className="max-w-[1000px] mx-auto">
-              <h2 className="text-6xl md:text-8xl font-bold tracking-tight text-center mb-24">
+              <h2 className="font-huge text-[10vw] md:text-[8rem] uppercase tracking-tighter text-center mb-32 leading-[0.8]">
                 {translations.faq.header}
               </h2>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {translations.faq.items.map((item, idx) => (
                   <div 
                     key={idx} 
-                    className={`bg-white rounded-[40px] p-8 md:p-12 transition-all duration-700 border border-gray-100 hover:border-gray-200 interactive group`}
+                    className={`bg-white rounded-[40px] p-4 md:p-8 transition-all duration-700 border border-black/5 hover:border-black/10 interactive group`}
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                   >
-                    <div className="flex justify-between items-center cursor-none">
-                      <h3 className="text-2xl md:text-3xl font-bold tracking-tight pr-12">
+                    <div className="flex justify-between items-center cursor-none gap-8">
+                      <h3 className="text-lg md:text-2xl leading-[1.2] font-bold text-black flex-1">
                         {item.q}
                       </h3>
-                      <div className={`w-14 h-14 rounded-full bg-[#f3f3f3] flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'group-hover:bg-gray-200'}`}>
-                        <span className={`text-3xl font-medium transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>
+                      <div className={`flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'bg-[#f3f3f3] text-black group-hover:bg-gray-200'}`}>
+                        <span className={`text-xl md:text-2xl font-light transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>
                           {openFaq === idx ? '−' : '+'}
                         </span>
                       </div>
                     </div>
                     <div 
                       className={`grid transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-                        openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-10' : 'grid-rows-[0fr] opacity-0'
+                        openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <p className="text-gray-500 text-xl leading-relaxed max-w-3xl">
+                        <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-3xl">
                           {item.a}
                         </p>
                       </div>
