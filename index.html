@@ -10,17 +10,49 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+      * {
+        cursor: none !important;
+      }
       body {
         font-family: 'Inter', sans-serif;
         background-color: #ffffff;
         color: #000000;
-        cursor: default;
         overflow-x: hidden;
       }
       .font-huge {
         font-weight: 900;
         letter-spacing: -0.05em;
         line-height: 0.85;
+      }
+      #custom-cursor {
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 99999;
+        mix-blend-mode: difference;
+        /* 使用 transform 复合属性来处理位移和缩放 */
+        transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        transform: translate(-50%, -50%) scale(1);
+        left: 0;
+        top: 0;
+      }
+      /* 当悬停在交互元素上时的状态 */
+      #custom-cursor.is-hovering {
+        transform: translate(-50%, -50%) scale(2); /* 20px * 2 = 40px */
+      }
+      /* 点击时的状态叠加 */
+      #custom-cursor.is-active {
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+      #custom-cursor.is-hovering.is-active {
+        transform: translate(-50%, -50%) scale(1.6);
+      }
+      
+      a, button {
+        cursor: none !important;
       }
     </style>
   <script type="importmap">
@@ -34,6 +66,52 @@
 </script>
 </head>
   <body>
+    <div id="custom-cursor"></div>
     <div id="root"></div>
+    <script>
+      const cursor = document.getElementById('custom-cursor');
+      let mouseX = 0;
+      let mouseY = 0;
+
+      // 实时更新鼠标位置
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+      });
+
+      // 使用事件委托处理所有交互元素的 hover 状态
+      document.addEventListener('mouseover', (e) => {
+        const target = e.target;
+        // 检查是否是链接、按钮或带有特定交互类的元素
+        const isInteractive = target.closest('a, button, [role="button"], .interactive');
+        // 检查是否位于导航栏内
+        const isInsideNav = target.closest('nav');
+
+        // 仅在交互元素上且不在导航栏内时放大
+        if (isInteractive && !isInsideNav) {
+          cursor.classList.add('is-hovering');
+        } else {
+          cursor.classList.remove('is-hovering');
+        }
+      });
+
+      document.addEventListener('mouseout', (e) => {
+        const target = e.target;
+        // 离开元素时确保清理状态
+        if (target.closest('a, button, [role="button"], .interactive')) {
+          cursor.classList.remove('is-hovering');
+        }
+      });
+
+      // 点击状态
+      document.addEventListener('mousedown', () => {
+        cursor.classList.add('is-active');
+      });
+      document.addEventListener('mouseup', () => {
+        cursor.classList.remove('is-active');
+      });
+    </script>
   </body>
 </html>

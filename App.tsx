@@ -6,10 +6,11 @@ import { Page, Language } from './types';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [language, setLanguage] = useState<Language>('en'); // Default to English
+  const [language, setLanguage] = useState<Language>('en');
   const [showNavbar, setShowNavbar] = useState(false);
   
   const introRef = useRef<HTMLDivElement>(null);
+  const portfolioRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState('All');
 
   useEffect(() => {
@@ -51,7 +52,11 @@ const App: React.FC = () => {
       tabs: ['全部', 'to B', '数据可视化'],
       project: "案例研究",
       developing: "正在开发中",
-      copyright: "作品集 © 2024"
+      copyright: "作品集 © 2024",
+      navItems: {
+        portfolio: '作品集',
+        blog: '博客',
+      }
     },
     en: {
       hero: ["GOOD DESIGN", "FEELS", "NATURAL ."],
@@ -60,16 +65,20 @@ const App: React.FC = () => {
       tabs: ['All', 'to B', 'Data Viz'],
       project: "Case Study",
       developing: "Under Development",
-      copyright: "PORTFOLIO © 2024"
+      copyright: "PORTFOLIO © 2024",
+      navItems: {
+        portfolio: 'Portfolio',
+        blog: 'Blog',
+      }
     }
   }[language];
 
   const renderContent = () => {
     switch (currentPage) {
       case 'portfolio':
-        return <Developing title={language === 'zh' ? "作品集" : "Portfolio"} />;
+        return <Developing title={translations.navItems.portfolio} />;
       case 'blog':
-        return <Developing title={language === 'zh' ? "博客" : "Blog"} />;
+        return <Developing title={translations.navItems.blog} />;
       default:
         return (
           <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-20 pb-40">
@@ -77,23 +86,29 @@ const App: React.FC = () => {
             <div>
               {/* Hero Section */}
               <section className="mb-16 relative">
+                <div className="flex items-center gap-4 mb-4">
+                   <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold">index</div>
+                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Personal Space</span>
+                </div>
+                
                 <h1 className="font-huge text-[13vw] md:text-[11.5rem] uppercase mb-16 select-none">
                   {translations.hero[0]} <br /> {translations.hero[1]} <br /> {translations.hero[2]}
                 </h1>
                 
                 <div className="flex flex-row items-center justify-between">
                   <div className="flex flex-wrap gap-2">
-                    {['Figma', 'LinkedIn', 'WeChat'].map(tag => (
+                    {(['portfolio', 'blog'] as const).map(key => (
                       <span 
-                        key={tag} 
-                        className="px-5 py-2 bg-[#f3f3f3] text-black text-sm rounded-full font-medium hover:bg-gray-200 transition-colors cursor-pointer"
+                        key={key} 
+                        onClick={() => handlePageChange(key)}
+                        className="px-5 py-2 bg-[#f3f3f3] text-black text-sm rounded-full font-medium hover:bg-gray-200 transition-colors interactive"
                       >
-                        {tag}
+                        {translations.navItems[key]}
                       </span>
                     ))}
                   </div>
                   
-                  <div className="flex items-center gap-2 px-5 py-2 bg-[#f3f3f3] text-black text-sm rounded-full font-medium cursor-default">
+                  <div className="flex items-center gap-2 px-5 py-2 bg-[#f3f3f3] text-black text-sm rounded-full font-medium interactive">
                     <span className="flex items-center rotate-[135deg]">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -113,14 +128,14 @@ const App: React.FC = () => {
             </div>
 
             {/* Portfolio Grid Section */}
-            <section id="portfolio-section">
+            <section id="portfolio-section" ref={portfolioRef}>
               <div className="flex items-center gap-4 mb-10 border-t pt-10 border-gray-100">
                 {translations.tabs.map(tab => (
                   <button 
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
-                      activeTab === tab ? 'bg-black text-white' : 'bg-white text-black border border-gray-200 hover:border-black cursor-pointer'
+                      activeTab === tab ? 'bg-black text-white' : 'bg-white text-black border border-gray-200 hover:border-black'
                     }`}
                   >
                     {tab}
@@ -130,11 +145,19 @@ const App: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative cursor-pointer border border-gray-100 transition-transform duration-700 hover:scale-[1.02]">
+                  <div key={i} className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive">
                     <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute bottom-10 left-10">
+                    <div className="absolute bottom-10 left-10 transition-transform duration-500 group-hover:translate-x-2">
                       <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i}</p>
                       <h3 className="text-2xl font-bold">{translations.project} {i}</h3>
+                    </div>
+                    {/* Small arrow icon appearing on hover */}
+                    <div className="absolute top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
+                      <div className="w-12 h-12 rounded-full border border-black flex items-center justify-center">
+                        <svg className="w-6 h-6 -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -161,9 +184,9 @@ const App: React.FC = () => {
         <div className="max-w-[1440px] mx-auto px-12 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-xl font-black uppercase tracking-tighter">{translations.copyright}</div>
           <div className="flex gap-12 text-sm font-bold uppercase tracking-widest">
-            <a href="#" className="hover:text-gray-400 transition-colors cursor-pointer">Behance</a>
-            <a href="#" className="hover:text-gray-400 transition-colors cursor-pointer">Dribbble</a>
-            <a href="#" className="hover:text-gray-400 transition-colors cursor-pointer">Instagram</a>
+            <a href="#" className="hover:text-gray-400 transition-colors">Behance</a>
+            <a href="#" className="hover:text-gray-400 transition-colors">Dribbble</a>
+            <a href="#" className="hover:text-gray-400 transition-colors">Instagram</a>
           </div>
         </div>
       </footer>
