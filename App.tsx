@@ -2,13 +2,13 @@
 import { Language, Page } from './types';
 import React, { useEffect, useRef, useState } from 'react';
 
-import Developing from './components/Developing';
 import Navbar from './components/Navbar';
 import ContactModal from './components/ContactModal';
+import ProjectDetail from './components/ProjectDetail';
 
 const BouncingPhoto: React.FC = () => {
   const [position, setPosition] = useState({ x: Math.random() * 200, y: Math.random() * 200 });
-  const [velocity, setVelocity] = useState({ x: 2, y: 2 });
+  const [velocity, setVelocity] = useState({ x: 1.5, y: 1.5 });
   const containerRef = useRef<HTMLDivElement>(null);
   const size = 120;
 
@@ -67,21 +67,23 @@ const BouncingPhoto: React.FC = () => {
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [language, setLanguage] = useState<Language>('zh');
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [language, setLanguage] = useState<Language>('en'); 
   const [showNavbar, setShowNavbar] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   
-  const heroRef = useRef<HTMLDivElement>(null);
-  const portfolioRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState('全部');
+  const [activeTab, setActiveTab] = useState('All');
 
   useEffect(() => {
     const handleScroll = () => {
+      if (currentPage !== 'home') {
+        setShowNavbar(false);
+        return;
+      }
       const portfolioSection = document.getElementById('portfolio-section');
       if (portfolioSection) {
         const portfolioTop = portfolioSection.offsetTop;
-        // Show navbar when scrolled past the hero bar or approaching portfolio
         setShowNavbar(window.scrollY > portfolioTop - 100);
       }
     };
@@ -92,10 +94,12 @@ const App: React.FC = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [currentPage]);
 
   const handlePageChange = (page: Page) => {
     if (page === 'home') {
+      setSelectedProjectId(null);
+      setCurrentPage('home');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const element = document.getElementById(`${page}-section`);
@@ -105,22 +109,29 @@ const App: React.FC = () => {
     }
   };
 
-  const toggleLanguage = () => {
-    const newLang = language === 'zh' ? 'en' : 'zh';
-    setLanguage(newLang);
-    setActiveTab(newLang === 'zh' ? '全部' : 'All');
+  const openProject = (id: string) => {
+    setSelectedProjectId(id);
+    setCurrentPage('project-detail');
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
+  const toggleLanguage = () => {
+    const newLang = language === 'en' ? 'zh' : 'en';
+    setLanguage(newLang);
+    setActiveTab(newLang === 'en' ? 'All' : '全部');
+  };
+
+  // Fixed missing articles property in translations
   const translations = {
     zh: {
-      hero: ["GOOD DESIGN", "FEELS", "NATURAL ."],
-      intro: "我是一名居住在柏林的数字设计总监，专注于创造数字体验 —— 网站、应用、平台以及介于两者之间的一切。目前在 Koto Studio 打造数字体验。",
-      tabs: ['全部', 'to B', '数据可视化'],
+      hero: ["设计之道", "归于", "自然 ."],
+      intro: "我是一名居住在柏林的数字设计总监，专注于创造网站、应用及平台等数字体验。目前在 Koto Studio 供职。",
+      tabs: ['全部', 'SaaS', '数据可视化'],
       project: "案例研究",
-      blogHeader: "INSIGHTS",
-      blogAction: "阅读文章",
+      blogHeader: "见解",
+      blogAction: "阅读全文",
       copyright: "作品集 © 2024",
-      jobStatus: "目前正在求职中",
+      jobStatus: "开放机会中",
       navItems: {
         portfolio: '作品集',
         blog: '博客',
@@ -128,34 +139,38 @@ const App: React.FC = () => {
       },
       articles: [
         {
-          tag: "设计哲学",
-          date: "2024.03",
-          title: "极简主义的回归：为什么少即是多在 2024 年依然重要",
-          desc: "探讨在信息爆炸的时代，设计师如何通过减少噪音来增强用户的情感连接。"
+          tag: "设计思维",
+          date: "2024年3月12日",
+          title: "极简主义在现代界面设计中的演变",
+          desc: "探讨极简主义如何从视觉美学演变为一种功能性工具，旨在减少认知负荷并增强用户体验。"
         },
         {
-          tag: "AI 与创意",
-          date: "2024.02",
-          title: "超越生成：将 AI 作为设计师的“第二大脑”而非替代品",
-          desc: "分析生成式 AI 如何重塑我们的工作流程。"
+          tag: "技术",
+          date: "2024年2月28日",
+          title: "人工智能对创意工作流的影响",
+          desc: "分析生成式人工智能工具如何改变设计师的工作方式，以及人类创造力在自动化时代的角色。"
         }
       ],
       faq: {
         header: "常见问题",
         items: [
-          { q: "你的典型产品设计工作流程是怎样的？", a: "我的流程通常分为四个阶段：发现与研究、定义策略、创意设计以及协作交付。我坚持以用户为中心，在每个阶段都进行数据验证和快速迭代，确保设计既美观又实用。" }
+          { q: "你的典型设计工作流程是怎样的？", a: "我的流程包括四个核心阶段：深度调研、策略定义、创意设计以及协作交付。我坚持以用户为中心，在每个阶段进行数据验证。" },
+          { q: "你最擅长哪些设计工具？", a: "Figma 是我的核心工具。同时熟练掌握 Adobe CC (PS, AI, AE) 进行视觉呈现，并利用 Blender/Spline 进行 3D 辅助。" },
+          { q: "你如何处理远程协作？", a: "我擅长异步沟通，使用 Notion 记录文档，Slack 进行即时通讯，Loom 录制设计说明，确保跨时区协作高效清晰。" },
+          { q: "你最擅长哪些行业的设计？", a: "我在金融科技 (FinTech)、SaaS 平台和高奢电商领域有深厚经验。擅长将复杂的信息架构转化为直观的产品。" },
+          { q: "如何确保设计稿在开发阶段被完美还原？", a: "我提供精准的设计规范和交互说明。通过参与早期可行性评估和定期的 Design QA，确保上线产品与预期一致。" }
         ]
       }
     },
     en: {
       hero: ["GOOD DESIGN", "FEELS", "NATURAL ."],
-      intro: "I'm a Berlin-based digital design director focused on creating digital experiences — websites, apps, platforms, and everything in between. Currently crafting Digital Experiences at Koto Studio.",
-      tabs: ['All', 'to B', 'Data Viz'],
+      intro: "I'm a Berlin-based Digital Design Director creating websites, apps, and platforms. Currently crafting experiences at Koto Studio.",
+      tabs: ['All', 'SaaS', 'Data Viz'],
       project: "Case Study",
       blogHeader: "INSIGHTS",
       blogAction: "Read Article",
       copyright: "PORTFOLIO © 2024",
-      jobStatus: "Currently seeking job",
+      jobStatus: "Open for opportunities",
       navItems: {
         portfolio: 'Portfolio',
         blog: 'Blog',
@@ -163,26 +178,40 @@ const App: React.FC = () => {
       },
       articles: [
         {
-          tag: "PHILOSOPHY",
-          date: "MAR 2024",
-          title: "The Return of Minimalism: Why Less is Still More in 2024",
-          desc: "Exploring how designers can enhance emotional connection by reducing noise in an era of information overload."
+          tag: "Design Thinking",
+          date: "Mar 12, 2024",
+          title: "The Evolution of Minimalism in Modern UI",
+          desc: "Exploring how minimalism has shifted from a visual aesthetic to a functional tool for reducing cognitive load and enhancing UX."
         },
         {
-          tag: "AI & CREATIVITY",
-          date: "FEB 2024",
-          title: "Beyond Generation: AI as a 'Second Brain' Not a Replacement",
-          desc: "Analyzing how generative AI is reshaping our workflows."
+          tag: "Technology",
+          date: "Feb 28, 2024",
+          title: "The Impact of AI on Creative Workflows",
+          desc: "An analysis of how generative AI tools are changing the way designers work and the evolving role of human creativity."
         }
       ],
       faq: {
         header: "Frequently Asked Questions",
         items: [
-          { q: "What is your typical product design workflow?", a: "My workflow follows four main stages: Discovery & Research, Strategic Definition, Creative Execution, and Collaborative Handoff." }
+          { q: "What is your typical product design workflow?", a: "My workflow follows four main stages: Discovery & Research, Strategic Definition, Creative Execution, and Collaborative Handoff. I stick to a user-centric approach, ensuring data validation and iteration at every step." },
+          { q: "What tools do you use for your design work?", a: "Figma is my primary tool for prototyping and design systems. I also use Adobe Creative Cloud (PS, AI, AE) for visual assets and Blender or Spline for 3D elements." },
+          { q: "How do you handle remote or asynchronous collaboration?", a: "I'm an expert at async communication. I use Notion for documentation, Slack/Discord for messaging, and Loom for video explanations. Clarity and consistency are my top priorities." },
+          { q: "Which industries do you have the most experience in?", a: "I have extensive experience in FinTech, SaaS platforms, and E-commerce. I specialize in turning complex information architectures into intuitive, brand-aligned digital products." },
+          { q: "How do you ensure your designs are implemented correctly?", a: "I provide detailed annotations and standardized components. I stay involved in early feasibility checks and perform regular Design QA to ensure the final product matches the design intent." }
         ]
       }
     }
   }[language];
+
+  if (currentPage === 'project-detail' && selectedProjectId === 'project-1') {
+    return (
+      <ProjectDetail 
+        language={language} 
+        onBack={() => { setCurrentPage('home'); window.scrollTo(0, 0); }}
+        onContactClick={() => setIsContactModalOpen(true)}
+      />
+    );
+  }
 
   return (
     <main className="relative min-h-screen bg-white text-black">
@@ -196,7 +225,7 @@ const App: React.FC = () => {
       />
       
       {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex flex-col px-6 md:px-12 pt-[42px] pb-12 overflow-hidden">
+      <section id="home-section" className="relative min-h-screen flex flex-col px-6 md:px-12 pt-[42px] pb-12 overflow-hidden">
         <BouncingPhoto />
         
         <div className="z-20">
@@ -207,7 +236,7 @@ const App: React.FC = () => {
           </h1>
         </div>
 
-        {/* New Status Bar from Screenshot */}
+        {/* Status Bar */}
         <div className="z-20 flex justify-between items-center mt-8 mb-12">
           <div className="flex gap-2">
             <button 
@@ -226,9 +255,7 @@ const App: React.FC = () => {
           
           <div className="flex">
             <div className="px-6 py-2 bg-[#f0f2f4] rounded-full text-sm font-medium flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
-                <path d="M9 10l-5 5 5 5"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/>
-              </svg>
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               {translations.jobStatus}
             </div>
           </div>
@@ -244,7 +271,7 @@ const App: React.FC = () => {
       </section>
 
       {/* Portfolio Grid Section */}
-      <section id="portfolio-section" ref={portfolioRef} className="px-6 md:px-12 mb-32">
+      <section id="portfolio-section" className="px-6 md:px-12 mb-32 pt-20">
         <div className="flex items-center gap-4 mb-10 border-t pt-10 border-gray-100">
           {translations.tabs.map(tab => (
             <button 
@@ -261,11 +288,17 @@ const App: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive">
+            <div 
+              key={i} 
+              onClick={() => i === 1 && openProject('project-1')}
+              className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive"
+            >
               <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="absolute bottom-10 left-10 transition-transform duration-500 group-hover:translate-x-2">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i}</p>
-                <h3 className="text-2xl font-bold">{translations.project} {i}</h3>
+                <h3 className="text-2xl font-bold">
+                  {i === 1 ? 'GPU Container Service' : translations.project + ' ' + i}
+                </h3>
               </div>
               <div className="absolute top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
                 <div className="w-12 h-12 rounded-full border border-black flex items-center justify-center">
@@ -280,16 +313,29 @@ const App: React.FC = () => {
       </section>
 
       {/* Blog Section */}
-      <section id="blog-section" className="px-6 md:px-12 border-t border-gray-100 pt-16 mb-40">
-        <div className="flex justify-between items-end mb-12">
-          <h2 className="text-5xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
+      <section id="blog-section" className="px-6 md:px-12 border-t border-gray-100 pt-32 mb-40">
+        <div className="flex justify-between items-end mb-16">
+          <h2 className="text-6xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
           <button className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors interactive">
             View All Thoughts →
           </button>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {translations.articles.map((article, idx) => (
+          {[
+            {
+              tag: translations.articles[0].tag,
+              date: translations.articles[0].date,
+              title: translations.articles[0].title,
+              desc: translations.articles[0].desc
+            },
+            {
+              tag: translations.articles[1].tag,
+              date: translations.articles[1].date,
+              title: translations.articles[1].title,
+              desc: translations.articles[1].desc
+            }
+          ].map((article, idx) => (
             <article key={idx} className="group flex flex-col interactive">
               <div className="flex justify-between items-center mb-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">
                 <span>{article.tag}</span>
@@ -314,36 +360,36 @@ const App: React.FC = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="bg-[#fcfcfc] py-32 px-6 md:px-12 border-t border-gray-100 w-full">
+      <section className="bg-[#fcfcfc] py-40 px-6 md:px-12 border-t border-gray-100 w-full">
         <div className="max-w-[1000px] mx-auto">
-          <h2 className="text-6xl md:text-7xl font-bold tracking-tight text-center mb-20">
+          <h2 className="text-6xl md:text-8xl font-bold tracking-tight text-center mb-24">
             {translations.faq.header}
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {translations.faq.items.map((item, idx) => (
               <div 
                 key={idx} 
-                className={`bg-white rounded-[32px] p-8 md:p-10 transition-all duration-700 border border-gray-100 hover:border-gray-200 interactive`}
+                className={`bg-white rounded-[40px] p-8 md:p-12 transition-all duration-700 border border-gray-100 hover:border-gray-200 interactive group`}
                 onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
               >
                 <div className="flex justify-between items-center cursor-none">
-                  <h3 className="text-xl md:text-2xl font-bold tracking-tight pr-8">
+                  <h3 className="text-2xl md:text-3xl font-bold tracking-tight pr-12">
                     {item.q}
                   </h3>
-                  <div className={`w-12 h-12 rounded-full bg-[#f3f3f3] flex items-center justify-center transition-transform duration-500 ${openFaq === idx ? 'bg-gray-100' : ''}`}>
-                    <span className={`text-2xl font-medium transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>
+                  <div className={`w-14 h-14 rounded-full bg-[#f3f3f3] flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'group-hover:bg-gray-200'}`}>
+                    <span className={`text-3xl font-medium transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>
                       {openFaq === idx ? '−' : '+'}
                     </span>
                   </div>
                 </div>
                 <div 
-                  className={`grid transition-all duration-500 ease-in-out ${
-                    openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-8' : 'grid-rows-[0fr] opacity-0'
+                  className={`grid transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                    openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-10' : 'grid-rows-[0fr] opacity-0'
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="text-gray-500 text-lg leading-relaxed max-w-3xl">
+                    <p className="text-gray-500 text-xl leading-relaxed max-w-3xl">
                       {item.a}
                     </p>
                   </div>
@@ -360,10 +406,10 @@ const App: React.FC = () => {
         language={language} 
       />
       
-      <footer className="py-32 border-t border-gray-100 w-full">
-        <div className="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-xl font-black uppercase tracking-tighter">{translations.copyright}</div>
-          <div className="flex gap-12 text-sm font-bold uppercase tracking-widest">
+      <footer className="py-32 border-t border-gray-100 w-full bg-white">
+        <div className="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="text-2xl font-black uppercase tracking-tighter">{translations.copyright}</div>
+          <div className="flex gap-16 text-sm font-bold uppercase tracking-widest">
             <a href="#" className="hover:text-gray-400 transition-colors interactive">Behance</a>
             <a href="#" className="hover:text-gray-400 transition-colors interactive">Dribbble</a>
             <a href="#" className="hover:text-gray-400 transition-colors interactive">Instagram</a>
