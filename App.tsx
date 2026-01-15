@@ -4,12 +4,14 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Developing from './components/Developing';
 import Navbar from './components/Navbar';
+import ContactModal from './components/ContactModal';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [language, setLanguage] = useState<Language>('en');
   const [showNavbar, setShowNavbar] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0); // Default first one open as per reference
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   
   const introRef = useRef<HTMLDivElement>(null);
   const portfolioRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,7 @@ const App: React.FC = () => {
       navItems: {
         portfolio: '作品集',
         blog: '博客',
+        resume: '简历'
       }
     },
     en: {
@@ -135,6 +138,7 @@ const App: React.FC = () => {
       navItems: {
         portfolio: 'Portfolio',
         blog: 'Blog',
+        resume: 'Resume'
       }
     }
   }[language];
@@ -171,6 +175,15 @@ const App: React.FC = () => {
                         {translations.navItems[key]}
                       </span>
                     ))}
+                    <span 
+                        onClick={() => window.open('#', '_blank')}
+                        className="px-5 py-2 bg-[#f3f3f3] text-black text-sm rounded-full font-medium hover:bg-gray-200 transition-colors flex items-center gap-2 interactive"
+                      >
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        {translations.navItems.resume}
+                      </span>
                   </div>
                   
                   <div className="flex items-center gap-2 px-5 py-2 bg-[#f3f3f3] text-black text-sm rounded-full font-medium interactive">
@@ -265,7 +278,7 @@ const App: React.FC = () => {
               </section>
             </div>
 
-            {/* NEW FAQ Section - Light themed, card-based layout */}
+            {/* FAQ Section */}
             <section className="bg-[#fcfcfc] py-32 px-6 md:px-12 border-t border-gray-100">
               <div className="max-w-[1000px] mx-auto">
                 <h2 className="text-6xl md:text-7xl font-bold tracking-tight text-center mb-20">
@@ -318,9 +331,16 @@ const App: React.FC = () => {
         onPageChange={handlePageChange}
         language={language}
         onLanguageToggle={toggleLanguage}
+        onContactClick={() => setIsContactModalOpen(true)}
       />
       
       {renderContent()}
+
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+        language={language} 
+      />
       
       <footer className="py-32 border-t border-gray-100">
         <div className="max-w-[1440px] mx-auto px-12 flex flex-col md:flex-row justify-between items-center gap-8">
