@@ -5,6 +5,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Navbar from './components/Navbar';
 import ContactModal from './components/ContactModal';
 import ProjectDetail from './components/ProjectDetail';
+import AviaDataDetail from './components/AviaDataDetail';
+import FireSafeDetail from './components/FireSafeDetail';
+import NeighborDetail from './components/NeighborDetail';
 
 const BouncingPhoto: React.FC = () => {
   const [position, setPosition] = useState({ x: Math.random() * 200, y: Math.random() * 200 });
@@ -211,6 +214,29 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
+  const getNavbarTitle = () => {
+    if (selectedProjectId === 'project-1') return "GPU CONTAINER SERVICE";
+    if (selectedProjectId === 'project-2') return "AVIA DATA ENGINE";
+    if (selectedProjectId === 'project-3') return "FIRE SAFE PLATFORM";
+    if (selectedProjectId === 'project-4') return "NEIGHBOR HUB";
+    return undefined;
+  }
+
+  const renderProjectDetail = () => {
+    switch(selectedProjectId) {
+      case 'project-1':
+        return <ProjectDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      case 'project-2':
+        return <AviaDataDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      case 'project-3':
+        return <FireSafeDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      case 'project-4':
+        return <NeighborDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <main className="relative min-h-screen bg-white text-black">
       <Navbar 
@@ -220,16 +246,12 @@ const App: React.FC = () => {
         language={language}
         onLanguageToggle={toggleLanguage}
         onContactClick={() => setIsContactModalOpen(true)}
-        projectTitle={currentPage === 'project-detail' ? "GPU CONTAINER SERVICE" : undefined}
+        projectTitle={currentPage === 'project-detail' ? getNavbarTitle() : undefined}
         onBack={goBack}
       />
       
-      {currentPage === 'project-detail' && selectedProjectId === 'project-1' ? (
-        <ProjectDetail 
-          language={language} 
-          onBack={goBack}
-          onContactClick={() => setIsContactModalOpen(true)}
-        />
+      {currentPage === 'project-detail' ? (
+        renderProjectDetail()
       ) : (
         <>
           {/* Hero Section */}
@@ -298,14 +320,23 @@ const App: React.FC = () => {
               {[1, 2, 3, 4].map((i) => (
                 <div 
                   key={i} 
-                  onClick={() => i === 1 && openProject('project-1')}
+                  onClick={() => {
+                    if (i === 1) openProject('project-1');
+                    if (i === 2) openProject('project-2');
+                    if (i === 3) openProject('project-3');
+                    if (i === 4) openProject('project-4');
+                  }}
                   className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive"
                 >
                   <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="absolute bottom-10 left-10 transition-transform duration-500 group-hover:translate-x-2">
                     <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i}</p>
                     <h3 className="text-2xl font-bold">
-                      {i === 1 ? 'GPU Container Service' : translations.project + ' ' + i}
+                      {i === 1 ? 'GPU Container Service' : 
+                       i === 2 ? (language === 'zh' ? '航产数智' : 'Avia Data Engine') : 
+                       i === 3 ? (language === 'zh' ? '智消云管' : 'Fire Safe Platform') :
+                       i === 4 ? (language === 'zh' ? '邻里生活' : 'Neighbor Hub') :
+                       translations.project + ' ' + i}
                     </h3>
                   </div>
                   <div className="absolute top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
