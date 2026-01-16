@@ -180,7 +180,7 @@ const App: React.FC = () => {
       project: "案例研究",
       blogHeader: "见解",
       blogAction: "阅读全文",
-      copyright: "作品集 © 2024",
+      copyright: "作品集 © 2026",
       jobStatus: "开放机会中",
       navItems: {
         portfolio: '作品',
@@ -277,7 +277,7 @@ const App: React.FC = () => {
       project: "Case Study",
       blogHeader: "INSIGHTS",
       blogAction: "Read Article",
-      copyright: "PORTFOLIO © 2024",
+      copyright: "PORTFOLIO © 2026",
       jobStatus: "Open for opportunities",
       navItems: {
         portfolio: 'Portfolio',
