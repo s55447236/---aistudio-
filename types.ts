@@ -1,5 +1,5 @@
 
-export type Page = 'home' | 'portfolio' | 'blog' | 'project-detail';
+export type Page = 'home' | 'portfolio' | 'blog' | 'insights' | 'project-detail' | 'blog-detail';
 export type Language = 'zh' | 'en';
 
 export interface Project {
@@ -9,4 +9,12 @@ export interface Project {
   description: string;
   role: string;
   year: string;
+}
+
+export interface Article {
+  id: string;
+  tag: string;
+  date: string;
+  title: string;
+  desc: string;
 }

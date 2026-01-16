@@ -9,8 +9,8 @@ interface NavbarProps {
   language: Language;
   onLanguageToggle: () => void;
   onContactClick: () => void;
-  // Project specific props
-  projectTitle?: string;
+  // Project or Blog specific props
+  displayTitle?: string;
   onBack?: () => void;
 }
 
@@ -21,16 +21,16 @@ const Navbar: React.FC<NavbarProps> = ({
   language, 
   onLanguageToggle,
   onContactClick,
-  projectTitle,
+  displayTitle,
   onBack
 }) => {
-  const isProjectView = currentPage === 'project-detail';
+  const isDetailView = currentPage === 'project-detail' || currentPage === 'blog-detail';
 
   const content = {
     zh: {
       home: '首页',
       portfolio: '作品集',
-      blog: '博客',
+      blog: '见解',
       resume: '下载简历',
       contact: '联系我',
       back: '返回'
@@ -38,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({
     en: {
       home: 'Home',
       portfolio: 'Portfolio',
-      blog: 'Blog',
+      blog: 'Insights',
       resume: 'Resume',
       contact: 'Contact',
       back: 'Back'
@@ -54,7 +54,7 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="h-[52px] bg-white/60 backdrop-blur-2xl border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.05)] rounded-full px-5 flex items-center gap-6 md:min-w-[700px] justify-between relative">
         {/* Left Section */}
         <div className="flex items-center gap-6">
-          {isProjectView ? (
+          {isDetailView ? (
             <div className="flex items-center gap-4">
               <button 
                 onClick={onBack}
@@ -66,11 +66,11 @@ const Navbar: React.FC<NavbarProps> = ({
                 <span>{content.back}</span>
               </button>
               
-              {projectTitle && (
+              {displayTitle && (
                 <>
                   <div className="h-4 w-[1px] bg-black/10 hidden sm:block" />
-                  <h1 className="text-[11px] font-black uppercase tracking-[0.2em] text-black/50 hidden md:block whitespace-nowrap">
-                    {projectTitle}
+                  <h1 className="text-[11px] font-black uppercase tracking-[0.2em] text-black/50 hidden md:block whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
+                    {displayTitle}
                   </h1>
                 </>
               )}
@@ -90,8 +90,8 @@ const Navbar: React.FC<NavbarProps> = ({
                 {content.portfolio}
               </button>
               <button 
-                onClick={() => onPageChange('blog')}
-                className={`text-sm font-semibold transition-colors interactive ${currentPage === 'blog' ? 'text-black' : 'text-black/40 hover:text-black'}`}
+                onClick={() => onPageChange('insights')}
+                className={`text-sm font-semibold transition-colors interactive ${currentPage === 'insights' ? 'text-black' : 'text-black/40 hover:text-black'}`}
               >
                 {content.blog}
               </button>

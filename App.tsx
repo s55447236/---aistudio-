@@ -1,7 +1,8 @@
 
-import { Language, Page } from './types';
+import { Language, Page, Article } from './types';
 import React, { useEffect, useRef, useState } from 'react';
 
+// 导入业务组件：导航栏、联系弹窗及各类详情页
 import Navbar from './components/Navbar';
 import ContactModal from './components/ContactModal';
 import ProjectDetail from './components/ProjectDetail';
@@ -10,7 +11,14 @@ import FireSafeDetail from './components/FireSafeDetail';
 import NeighborDetail from './components/NeighborDetail';
 import DigitalTwinDetail from './components/DigitalTwinDetail';
 import DesignSystemDetail from './components/DesignSystemDetail';
+import BlogDetail from './components/BlogDetail';
+import InsightsPage from './components/InsightsPage';
+import PortfolioPage from './components/PortfolioPage';
 
+/**
+ * 首页装饰性浮动照片组件
+ * 实现了一个在屏幕内随机反弹的圆形头像
+ */
 const BouncingPhoto: React.FC = () => {
   const [position, setPosition] = useState({ x: Math.random() * 200, y: Math.random() * 200 });
   const [velocity, setVelocity] = useState({ x: 1.5, y: 1.5 });
@@ -71,18 +79,32 @@ const BouncingPhoto: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [language, setLanguage] = useState<Language>('en'); 
-  const [showNavbar, setShowNavbar] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  // 核心状态管理
+  const [currentPage, setCurrentPage] = useState<Page>('home'); // 当前页面路由
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null); // 选中的项目ID
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null); // 选中的文章ID
+  const [language, setLanguage] = useState<Language>('en'); // 多语言状态
+  const [showNavbar, setShowNavbar] = useState(false); // 导航栏显隐控制
+  const [openFaq, setOpenFaq] = useState<number | null>(0); // 当前展开的 FAQ 索引
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false); // 联系弹窗控制
   
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab] = useState('All'); // 作品集筛选分类
 
+  // 项目列表数据
+  const projectList = [
+    { id: 'project-1', name: 'GPU Container Service', nameZh: 'GPU 容器云' },
+    { id: 'project-2', name: 'Avia Data Engine', nameZh: '航产数智' },
+    { id: 'project-3', name: 'Fire Safe Platform', nameZh: '智消云管' },
+    { id: 'project-4', name: 'Neighbor Hub', nameZh: '邻里生活' },
+    { id: 'project-5', name: 'Twin Core Strategy', nameZh: '数字孪生方法论' },
+    { id: 'project-6', name: 'Design Systems', nameZh: '设计规范体系' }
+  ];
+
+  // 监听滚动，控制导航栏动态出现逻辑
   useEffect(() => {
     const handleScroll = () => {
-      if (currentPage === 'project-detail') {
+      // 在详情页或独立页面始终显示导航栏
+      if (['project-detail', 'blog-detail', 'insights', 'portfolio'].includes(currentPage)) {
         setShowNavbar(true);
         return;
       }
@@ -90,6 +112,7 @@ const App: React.FC = () => {
       const portfolioSection = document.getElementById('portfolio-section');
       if (portfolioSection) {
         const portfolioTop = portfolioSection.offsetTop;
+        // 当滚动到作品集区域时显示导航栏
         setShowNavbar(window.scrollY > portfolioTop - 100);
       } else {
         setShowNavbar(false);
@@ -104,31 +127,38 @@ const App: React.FC = () => {
     };
   }, [currentPage]);
 
+  // 页面切换处理逻辑
   const handlePageChange = (page: Page) => {
-    if (page === 'home') {
-      setSelectedProjectId(null);
-      setCurrentPage('home');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      const element = document.getElementById(`${page}-section`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    setSelectedProjectId(null);
+    setSelectedArticleId(null);
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // 进入项目详情页
   const openProject = (id: string) => {
     setSelectedProjectId(id);
+    setSelectedArticleId(null);
     setCurrentPage('project-detail');
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
+  // 进入文章详情页
+  const openArticle = (id: string) => {
+    setSelectedArticleId(id);
+    setSelectedProjectId(null);
+    setCurrentPage('blog-detail');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  // 语言切换
   const toggleLanguage = () => {
     const newLang = language === 'en' ? 'zh' : 'en';
     setLanguage(newLang);
     setActiveTab(newLang === 'en' ? 'All' : '全部');
   };
 
+  // 静态文案翻译数据
   const translations = {
     zh: {
       hero: ["设计之道", "归于", "自然 ."],
@@ -141,17 +171,19 @@ const App: React.FC = () => {
       jobStatus: "开放机会中",
       navItems: {
         portfolio: '作品集',
-        blog: '博客',
+        blog: '见解',
         resume: '简历'
       },
       articles: [
         {
+          id: 'minimalism-evolution',
           tag: "设计思维",
           date: "2024年3月12日",
           title: "极简主义在现代界面设计中的演变",
           desc: "探讨极简主义如何从视觉美学演变为一种功能性工具，旨在减少认知负荷并增强用户体验。"
         },
         {
+          id: 'ai-impact',
           tag: "技术",
           date: "2024年2月28日",
           title: "人工智能对创意工作流的影响",
@@ -165,7 +197,7 @@ const App: React.FC = () => {
           { q: "你最擅长哪些设计工具？", a: "Figma 是我的核心工具。同时熟练掌握 Adobe CC (PS, AI, AE) 进行视觉呈现，并利用 Blender/Spline 进行 3D 辅助。" },
           { q: "你如何处理远程协作？", a: "我擅长异步沟通，使用 Notion 记录文档，Slack 进行即时通讯，Loom 录制设计说明，确保跨时区协作高效清晰。" },
           { q: "你最擅长哪些行业的设计？", a: "我在金融科技 (FinTech)、SaaS 平台和数字孪生大屏领域有深厚经验。擅长将复杂的信息架构转化为直观的产品。" },
-          { q: "如何确保设计稿在开发阶段被完美还原？", a: "我提供精准的设计规范和交互说明。通过参与早期可行性评估和定期的 Design QA，确保上线产品与预期一致。" }
+          { q: "如何确保设计稿在开发阶段被完美还原？", a: "我提供精准的设计规范 and 交互说明。通过参与早期可行性评估 and 定期的 Design QA，确保上线产品与预期一致。" }
         ]
       }
     },
@@ -180,17 +212,19 @@ const App: React.FC = () => {
       jobStatus: "Open for opportunities",
       navItems: {
         portfolio: 'Portfolio',
-        blog: 'Blog',
+        blog: 'Insights',
         resume: 'Resume'
       },
       articles: [
         {
+          id: 'minimalism-evolution',
           tag: "Design Thinking",
           date: "Mar 12, 2024",
           title: "The Evolution of Minimalism in Modern UI",
           desc: "Exploring how minimalism has shifted from a visual aesthetic to a functional tool for reducing cognitive load and enhancing UX."
         },
         {
+          id: 'ai-impact',
           tag: "Technology",
           date: "Feb 28, 2024",
           title: "The Impact of AI on Creative Workflows",
@@ -210,62 +244,75 @@ const App: React.FC = () => {
     }
   }[language];
 
+  // 返回首页
   const goBack = () => {
-    setCurrentPage('home');
-    setSelectedProjectId(null);
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    handlePageChange('home');
   };
 
+  // 根据当前选择的项目/文章返回标题给导航栏显示
   const getNavbarTitle = () => {
-    const titles: Record<string, string> = {
-      'project-1': "GPU CONTAINER SERVICE",
-      'project-2': "AVIA DATA ENGINE",
-      'project-3': "FIRE SAFE PLATFORM",
-      'project-4': "NEIGHBOR HUB",
-      'project-5': "TWIN CORE METHODOLOGY",
-      'project-6': "DESIGN SYSTEMS"
-    };
-    return titles[selectedProjectId || ''];
+    if (currentPage === 'project-detail') {
+        const titles: Record<string, string> = {
+            'project-1': "GPU CONTAINER SERVICE",
+            'project-2': "AVIA DATA ENGINE",
+            'project-3': "FIRE SAFE PLATFORM",
+            'project-4': "NEIGHBOR HUB",
+            'project-5': "TWIN CORE METHODOLOGY",
+            'project-6': "DESIGN SYSTEMS"
+        };
+        return titles[selectedProjectId || ''];
+    } else if (currentPage === 'blog-detail') {
+        const titles: Record<string, string> = {
+            'ai-impact': "AI ON CREATIVE WORKFLOWS",
+            'minimalism-evolution': "MINIMALISM IN MODERN UI"
+        };
+        return titles[selectedArticleId || ''];
+    }
+    return "";
   }
 
-  const renderProjectDetail = () => {
-    switch(selectedProjectId) {
-      case 'project-1': return <ProjectDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      case 'project-2': return <AviaDataDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      case 'project-3': return <FireSafeDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      case 'project-4': return <NeighborDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      case 'project-5': return <DigitalTwinDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      case 'project-6': return <DesignSystemDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      default: return null;
+  // 渲染对应的详情页或子页面组件
+  const renderDetail = () => {
+    if (currentPage === 'project-detail') {
+        switch(selectedProjectId) {
+            case 'project-1': return <ProjectDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+            case 'project-2': return <AviaDataDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+            case 'project-3': return <FireSafeDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+            case 'project-4': return <NeighborDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+            case 'project-5': return <DigitalTwinDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+            case 'project-6': return <DesignSystemDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+            default: return null;
+        }
+    } else if (currentPage === 'blog-detail') {
+        return <BlogDetail articleId={selectedArticleId || ''} language={language} onBack={() => setCurrentPage('insights')} />;
+    } else if (currentPage === 'insights') {
+        return <InsightsPage language={language} articles={translations.articles as Article[]} onArticleClick={openArticle} onBack={goBack} />;
+    } else if (currentPage === 'portfolio') {
+        return <PortfolioPage language={language} projects={projectList} onProjectClick={openProject} onBack={goBack} />;
     }
+    return null;
   };
-
-  const projectList = [
-    { id: 'project-1', name: 'GPU Container Service', nameZh: 'GPU 容器云' },
-    { id: 'project-2', name: 'Avia Data Engine', nameZh: '航产数智' },
-    { id: 'project-3', name: 'Fire Safe Platform', nameZh: '智消云管' },
-    { id: 'project-4', name: 'Neighbor Hub', nameZh: '邻里生活' },
-    { id: 'project-5', name: 'Twin Core Strategy', nameZh: '数字孪生方法论' },
-    { id: 'project-6', name: 'Design Systems', nameZh: '设计规范体系' }
-  ];
 
   return (
     <main className="relative min-h-screen bg-white text-black">
+      {/* 全局悬浮导航栏 */}
       <Navbar 
         isVisible={showNavbar} 
         currentPage={currentPage} 
-        onPageChange={handlePageChange}
+        onPageChange={(p) => handlePageChange(p)} 
         language={language}
         onLanguageToggle={toggleLanguage}
         onContactClick={() => setIsContactModalOpen(true)}
-        projectTitle={currentPage === 'project-detail' ? getNavbarTitle() : undefined}
+        displayTitle={getNavbarTitle()}
         onBack={goBack}
       />
       
-      {currentPage === 'project-detail' ? (
-        renderProjectDetail()
+      {/* 动态页面内容切换 */}
+      {['project-detail', 'blog-detail', 'insights', 'portfolio'].includes(currentPage) ? (
+        renderDetail()
       ) : (
         <>
+          {/* 1. HERO 模块 - 首页首屏 */}
           <section id="home-section" className="relative min-h-screen flex flex-col px-6 md:px-12 pt-[42px] pb-12 overflow-hidden">
             <BouncingPhoto />
             <div className="z-20">
@@ -280,7 +327,7 @@ const App: React.FC = () => {
                 <button onClick={() => handlePageChange('portfolio')} className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive">
                   {translations.navItems.portfolio}
                 </button>
-                <button onClick={() => handlePageChange('blog')} className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive">
+                <button onClick={() => handlePageChange('insights')} className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive">
                   {translations.navItems.blog}
                 </button>
               </div>
@@ -298,6 +345,7 @@ const App: React.FC = () => {
             </div>
           </section>
 
+          {/* 2. PORTFOLIO 模块 - 作品展示区域 */}
           <section id="portfolio-section" className="px-6 md:px-12 mb-32 pt-20">
             <div className="flex items-center gap-4 mb-10 border-t pt-10 border-gray-100">
               {translations.tabs.map(tab => (
@@ -332,16 +380,30 @@ const App: React.FC = () => {
                 </div>
               ))}
             </div>
+            <div className="mt-12 flex justify-center">
+              <button 
+                onClick={() => handlePageChange('portfolio')}
+                className="px-8 py-3 bg-black text-white rounded-full font-bold text-sm interactive hover:bg-gray-800 transition-colors"
+              >
+                {language === 'zh' ? '查看更多作品' : 'Explore All Works'}
+              </button>
+            </div>
           </section>
 
+          {/* 3. BLOG 模块 - 见解文章列表 (预览版) */}
           <section id="blog-section" className="px-6 md:px-12 border-t border-gray-100 pt-32 mb-40">
             <div className="flex justify-between items-end mb-16">
               <h2 className="text-6xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
-              <button className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors interactive">View All Thoughts →</button>
+              <button 
+                onClick={() => handlePageChange('insights')}
+                className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors interactive"
+              >
+                {language === 'zh' ? '查看全部见解 →' : 'View All Thoughts →'}
+              </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {translations.articles.map((article, idx) => (
-                <article key={idx} className="group flex flex-col interactive">
+                <article key={idx} className="group flex flex-col interactive" onClick={() => openArticle(article.id)}>
                   <div className="flex justify-between items-center mb-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">
                     <span>{article.tag}</span>
                     <span>{article.date}</span>
@@ -358,6 +420,7 @@ const App: React.FC = () => {
             </div>
           </section>
 
+          {/* 4. FAQ 模块 - 常见问题解答 */}
           <section className="bg-white py-40 px-6 md:px-12 w-full">
             <div className="max-w-[1000px] mx-auto">
               <h2 className="font-huge text-[10vw] md:text-[8rem] uppercase tracking-tighter text-center mb-32 leading-[0.8]">{translations.faq.header}</h2>
@@ -365,15 +428,16 @@ const App: React.FC = () => {
                 {translations.faq.items.map((item, idx) => (
                   <div 
                     key={idx} 
-                    className={`bg-white rounded-[40px] p-4 md:p-8 transition-all duration-700 border border-black/5 hover:border-black/10 interactive group`}
+                    className={`bg-white rounded-[40px] p-4 md:p-8 transition-all duration-700 border border-black/5 faq-item-hover interactive group overflow-hidden`}
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                   >
                     <div className="flex justify-between items-center cursor-none gap-8">
-                      <h3 className="text-lg md:text-2xl leading-[1.2] font-bold text-black flex-1">{item.q}</h3>
-                      <div className={`flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'bg-[#f3f3f3] text-black group-hover:bg-gray-200'}`}>
+                      <h3 className="text-lg md:text-2xl leading-[1.2] font-bold text-black flex-1 transition-colors duration-500 group-hover:text-black">{item.q}</h3>
+                      <div className={`flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'bg-[#f3f3f3] text-black group-hover:bg-black group-hover:text-white'}`}>
                         <span className={`text-xl md:text-2xl font-light transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>{openFaq === idx ? '−' : '+'}</span>
                       </div>
                     </div>
+                    {/* 展开/收起动画逻辑 */}
                     <div className={`grid transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'}`}>
                       <div className="overflow-hidden">
                         <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-3xl">{item.a}</p>
@@ -387,8 +451,10 @@ const App: React.FC = () => {
         </>
       )}
 
+      {/* 5. CONTACT MODAL - 浮层联系弹窗 */}
       <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} language={language} />
       
+      {/* 6. FOOTER - 页脚版权信息 */}
       <footer className="py-32 border-t border-gray-100 w-full bg-white">
         <div className="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="text-2xl font-black uppercase tracking-tighter">{translations.copyright}</div>
