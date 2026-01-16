@@ -37,7 +37,7 @@ const Navbar: React.FC<NavbarProps> = ({
     },
     en: {
       home: 'Home',
-      portfolio: 'Works',
+      portfolio: 'Portfolio',
       blog: 'Insights',
       resume: 'CV',
       contact: 'Contact',

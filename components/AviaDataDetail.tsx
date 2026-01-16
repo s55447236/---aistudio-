@@ -95,12 +95,12 @@ const AviaDataDetail: React.FC<AviaDataDetailProps> = ({ language, onBack, onCon
 
       {/* Footer Nav */}
       <section className="px-6 md:px-12 py-40 border-t border-gray-100 flex flex-col items-center">
-        <p className="text-xl font-bold mb-8 opacity-50">Back to Projects</p>
+        <p className="text-xl font-bold mb-8 opacity-50">{isEn ? "Back to Portfolio" : "返回作品"}</p>
         <button 
           onClick={onBack}
           className="text-5xl md:text-8xl font-huge hover:opacity-50 transition-opacity interactive"
         >
-          VIEW ALL WORKS ←
+          {isEn ? "VIEW PORTFOLIO" : "查看全部作品"} ←
         </button>
       </section>
     </div>

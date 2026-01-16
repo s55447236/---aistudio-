@@ -88,9 +88,9 @@ const DesignSystemDetail: React.FC<DesignSystemDetailProps> = ({ language, onBac
       </section>
 
       <section className="px-6 md:px-12 py-40 border-t border-gray-100 flex flex-col items-center">
-        <p className="text-xl font-bold mb-8 opacity-50">Back to Projects</p>
+        <p className="text-xl font-bold mb-8 opacity-50">{isEn ? "Return to Portfolio" : "返回作品"}</p>
         <button onClick={onBack} className="text-5xl md:text-8xl font-huge hover:opacity-50 transition-opacity interactive">
-          GO BACK HOME ←
+          {isEn ? "VIEW PORTFOLIO" : "查看全部作品"} ←
         </button>
       </section>
     </div>

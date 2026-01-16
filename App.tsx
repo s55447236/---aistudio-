@@ -92,12 +92,12 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home'); // 当前页面路由
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null); // 选中的项目ID
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null); // 选中的文章ID
-  const [language, setLanguage] = useState<Language>('en'); // 多语言状态
+  const [language, setLanguage] = useState<Language>('en'); // Default set to English
   const [showNavbar, setShowNavbar] = useState(false); // 导航栏显隐控制
   const [openFaq, setOpenFaq] = useState<number | null>(0); // 当前展开的 FAQ 索引
   const [isContactModalOpen, setIsContactModalOpen] = useState(false); // 联系弹窗控制
   
-  const [activeTab, setActiveTab] = useState('All'); // 作品集筛选分类
+  const [activeTab, setActiveTab] = useState('All'); // Initial tab in English
 
   // 项目列表数据
   const projectList = [
@@ -121,7 +121,6 @@ const App: React.FC = () => {
       const portfolioSection = document.getElementById('portfolio-section');
       if (portfolioSection) {
         const portfolioTop = portfolioSection.offsetTop;
-        // 当滚动到作品集区域（或越过临界点）时显示导航栏
         setShowNavbar(window.scrollY > portfolioTop - 120);
       } else {
         setShowNavbar(false);
@@ -179,41 +178,97 @@ const App: React.FC = () => {
       copyright: "作品集 © 2024",
       jobStatus: "开放机会中",
       navItems: {
-        portfolio: '作品集',
+        portfolio: '作品',
         blog: '见解',
         resume: '简历'
       },
       articles: [
         {
-          id: 'minimalism-evolution',
+          id: 'ux-trends-2026',
           tag: "设计思维",
           date: "2024年3月12日",
+          title: "2026年产品体验设计趋势",
+          desc: "探讨智能化、自然交互、个性化和包容性如何重塑2026年的数字产品深度体验。"
+        },
+        {
+          id: 'ai-ux-revolution',
+          tag: "AI 变革",
+          date: "2024年3月05日",
+          title: "AI 时代的 UX 变革：从“像素推移”到“逻辑编排”",
+          desc: "生成式 AI 正在从底层改变我们构建数字产品的方式，将设计师的关注点从界面表现层拉升至产品逻辑层。"
+        },
+        {
+          id: 'minimalism-evolution',
+          tag: "审美探讨",
+          date: "2024年2月28日",
           title: "极简主义在现代界面设计中的演变",
           desc: "探讨极简主义如何从视觉美学演变为一种功能性工具，旨在减少认知负荷并增强用户体验。"
         },
         {
-          id: 'ai-impact',
-          tag: "技术",
-          date: "2024年2月28日",
-          title: "人工智能对创意工作流的影响",
-          desc: "分析生成式人工智能工具如何改变设计师的工作方式，以及人类创造力在自动化时代的角色。"
+          id: 'complexity-design',
+          tag: "系统设计",
+          date: "2024年2月15日",
+          title: "为复杂系统而设计：B端产品的降噪艺术",
+          desc: "如何在海量数据与复杂逻辑中，通过设计手段为用户提供清晰的行动路径。"
+        },
+        {
+          id: 'data-viz-best-practices',
+          tag: "可视化",
+          date: "2024年2月01日",
+          title: "数据可视化的叙事逻辑",
+          desc: "图表不仅是数据的呈现，更是故事的讲述。探讨如何通过视觉编码传达深层见解。"
+        },
+        {
+          id: 'atomic-design-2024',
+          tag: "方法论",
+          date: "2024年1月20日",
+          title: "2024 原子设计实战指南",
+          desc: "在快速迭代的团队中，如何构建并维护一套高可用的原子化组件库。"
+        },
+        {
+          id: 'human-centered-ai',
+          tag: "人机交互",
+          date: "2024年1月10日",
+          title: "以人为本的 AI 交互设计",
+          desc: "AI 不是黑盒，探讨如何通过设计增加 AI 系统的透明度与用户掌控感。"
+        },
+        {
+          id: 'saas-dashboards',
+          tag: "SaaS 设计",
+          date: "2023年12月25日",
+          title: "未来 SaaS 仪表盘的设计趋势",
+          desc: "从监控中心到行动中心，SaaS 仪表盘正在经历怎样的职能转变？"
+        },
+        {
+          id: 'inclusive-systems',
+          tag: "包容性",
+          date: "2023年12月15日",
+          title: "构建包容性的设计系统",
+          desc: "无障碍设计不应是可选项，探讨如何将包容性原则植入设计系统的基因。"
+        },
+        {
+          id: 'motion-for-utility',
+          tag: "动态设计",
+          date: "2023年12月01日",
+          title: "动效：作为功能性工具而非装饰",
+          desc: "探讨动效如何通过引导用户注意力和解释界面关系来提升可用性。"
         }
       ],
       faq: {
-        header: "常见问题",
-        items: [
+        header: "实践准则",
+        items:[
           { q: "你的典型设计工作流程是怎样的？", a: "我的流程包括四个核心阶段：深度调研、策略定义、创意设计以及协作交付。我坚持以用户为中心，在每个阶段进行数据验证。" },
-          { q: "你最擅长哪些设计工具？", a: "Figma 是我的核心工具。同时熟练掌握 Adobe CC (PS, AI, AE) 进行视觉呈现，并利用 Blender/Spline 进行 3D 辅助。" },
-          { q: "你如何处理远程协作？", a: "我擅长异步沟通，使用 Notion 记录文档，Slack 进行即时通讯，Loom 录制设计说明，确保跨时区协作高效清晰。" },
-          { q: "你最擅长哪些行业的设计？", a: "我在金融科技 (FinTech)、SaaS 平台和数字孪生大屏领域有深厚经验。擅长将复杂的信息架构转化为直观的产品。" },
-          { q: "如何确保设计稿在开发阶段被完美还原？", a: "我提供精准的设计规范 and 交互说明。通过参与早期可行性评估 and 定期的 Design QA，确保上线产品与预期一致。" }
+          { q: "面对技术限制，你如何处理无法实现的理想方案？", a: "我会与开发团队协作寻求“优雅降级”的替代方案，在确保技术可行性的前提下，最大程度保留设计的核心交互体验。" },
+          { q: "你如何平衡用户需求与业务目标", a: "我通过将用户痛点精准转化为业务增长指标，利用 MVP 思路在确保商业价值实现的同时，为用户提供最优路径。" }
+          { q: "当利益相关者强烈反对你的方案时，你会怎么办？", a: "我会以事实 and 数据为依据进行“去主观化”沟通，并提议通过 A/B 测试或快速原型验证来寻求共识，而非陷入审美争论。" },
+          { q: "你认为 AI 将如何改变设计师的角色？", a: "AI 将设计师从繁琐的重复性执行中解放出来，使其重心转向更深层的需求定义、系统性思考以及对人机协作逻辑的把控。" }
         ]
       }
     },
     en: {
       hero: ["GOOD DESIGN", "FEELS", "NATURAL ."],
       intro: "I'm a Shanghai-based Digital Design Expert creating websites, apps, and platforms. Specialized in complex systems and data visualization.",
-      tabs: ['All', 'SaaS', 'Data Viz', 'Insights'],
+      tabs: ['All', 'SaaS', 'Data Viz', 'Platform'],
       project: "Case Study",
       blogHeader: "INSIGHTS",
       blogAction: "Read Article",
@@ -226,28 +281,84 @@ const App: React.FC = () => {
       },
       articles: [
         {
-          id: 'minimalism-evolution',
+          id: 'ux-trends-2026',
           tag: "Design Thinking",
           date: "Mar 12, 2024",
-          title: "The Evolution of Minimalism in Modern UI",
-          desc: "Exploring how minimalism has shifted from a visual aesthetic to a functional tool for reducing cognitive load and enhancing UX."
+          title: "2026 Product Experience Design Trends",
+          desc: "Exploring how intelligence, natural interaction, and personalization reshape digital products in 2026."
         },
         {
-          id: 'ai-impact',
-          tag: "Technology",
+          id: 'ai-ux-revolution',
+          tag: "AI Revolution",
+          date: "Mar 05, 2024",
+          title: "UX Revolution in AI Era: From Pixel Shifting to Logic Arrangement",
+          desc: "Generative AI is changing how we build digital products from the ground up, shifting focus from visual layers to logic."
+        },
+        {
+          id: 'minimalism-evolution',
+          tag: "Aesthetics",
           date: "Feb 28, 2024",
-          title: "The Impact of AI on Creative Workflows",
-          desc: "An analysis of how generative AI tools are changing the way designers work and the evolving role of human creativity."
+          title: "The Evolution of Minimalism in Modern UI",
+          desc: "Exploring how minimalism evolved from aesthetic style to functional tool for reducing cognitive load."
+        },
+        {
+          id: 'complexity-design',
+          tag: "System Design",
+          date: "Feb 15, 2024",
+          title: "Designing for Complexity: The Art of De-noising",
+          desc: "How to provide clear action paths for users in massive data and complex logic."
+        },
+        {
+          id: 'data-viz-best-practices',
+          tag: "Visualization",
+          date: "Feb 01, 2024",
+          title: "The Narrative Logic of Data Visualization",
+          desc: "Charts are more than just data presentation; they are storytelling tools for deep insights."
+        },
+        {
+          id: 'atomic-design-2024',
+          tag: "Methodology",
+          date: "Jan 20, 2024",
+          title: "2024 Atomic Design Practical Guide",
+          desc: "Building and maintaining highly available atomic component libraries in fast-moving teams."
+        },
+        {
+          id: 'human-centered-ai',
+          tag: "HCI",
+          date: "Jan 10, 2024",
+          title: "Human-Centered AI Interaction Design",
+          desc: "AI shouldn't be a black box; exploring transparency and control through design."
+        },
+        {
+          id: 'saas-dashboards',
+          tag: "SaaS Design",
+          date: "Dec 25, 2023",
+          title: "Future Trends in SaaS Dashboard Design",
+          desc: "From monitoring hubs to action centers: the functional shift of SaaS dashboards."
+        },
+        {
+          id: 'inclusive-systems',
+          tag: "Inclusivity",
+          date: "Dec 15, 2023",
+          title: "Building Inclusive Design Systems",
+          desc: "Accessibility is not an option; embedding inclusive principles into the design DNA."
+        },
+        {
+          id: 'motion-for-utility',
+          tag: "Motion Design",
+          date: "Dec 01, 2023",
+          title: "Motion: Functional Tool Over Decoration",
+          desc: "How motion enhances usability by guiding attention and explaining interface relationships."
         }
       ],
       faq: {
-        header: "QUESTIONS",
+        header: "PRACTICAL METHODS",
         items: [
-          { q: "What is your typical product design workflow?", a: "My workflow follows four main stages: Discovery & Research, Strategic Definition, Creative Execution, and Collaborative Handoff. I stick to a user-centric approach, ensuring data validation and iteration at every step." },
-          { q: "What tools do you use for your design work?", a: "Figma is my primary tool for prototyping and design systems. I also use Adobe Creative Cloud (PS, AI, AE) for visual assets and Blender or Spline for 3D elements." },
-          { q: "How do you handle remote or asynchronous collaboration?", a: "I'm an expert at async communication. I use Notion for documentation, Slack/Discord for messaging, and Loom for video explanations. Clarity and consistency are my top priorities." },
-          { q: "Which industries do you have the most experience in?", a: "I have extensive experience in FinTech, SaaS platforms, and Digital Twins. I specialize in turning complex information architectures into intuitive digital products." },
-          { q: "How do you ensure your designs are implemented correctly?", a: "I provide detailed annotations and standardized components. I stay involved in early feasibility checks and perform regular Design QA to ensure the final product matches the design intent." }
+          { q: "What is your typical product design workflow?", a: "My workflow follows four main stages: Discovery & Research, Strategic Definition, Creative Execution, and Collaborative Handoff." }
+          { q: "How do you handle idealized solutions that cannot be implemented due to technical constraints?", a: "I collaborate with the development team to seek 'graceful degradation' alternatives. My goal is to maximize the preservation of the core interaction experience while ensuring technical feasibility." },
+          { q: "How do you balance user needs with business goals?", a: "I precisely translate user pain points into business growth metrics. By utilizing an MVP (Minimum Viable Product) mindset, I ensure the realization of business value while providing the optimal path for the user." },
+          { q: "What do you do when stakeholders strongly oppose your proposal?", a: "I focus on 'de-subjectivized' communication based on facts and data. I typically propose seeking consensus through A/B testing or rapid prototyping rather than getting bogged down in subjective aesthetic debates." },
+          { q: "How do you think AI will change the role of the designer?", a: "AI will liberate designers from tedious, repetitive execution. This shifts our focus toward deeper requirements definition, systems thinking, and mastering the logic of human-computer collaboration." }
         ]
       }
     }
@@ -272,8 +383,16 @@ const App: React.FC = () => {
         return titles[selectedProjectId || ''];
     } else if (currentPage === 'blog-detail') {
         const titles: Record<string, string> = {
-            'ai-impact': "AI TRANSFORMATION",
-            'minimalism-evolution': "MODERN MINIMALISM"
+            'ux-trends-2026': "2026 UX TRENDS",
+            'ai-ux-revolution': "AI UX REVOLUTION",
+            'minimalism-evolution': "MODERN MINIMALISM",
+            'complexity-design': "COMPLEXITY",
+            'data-viz-best-practices': "DATA VIZ",
+            'atomic-design-2024': "ATOMIC DESIGN",
+            'human-centered-ai': "HUMAN AI",
+            'saas-dashboards': "SAAS DASHBOARD",
+            'inclusive-systems': "INCLUSIVITY",
+            'motion-for-utility': "UTILITY MOTION"
         };
         return titles[selectedArticleId || ''];
     }
@@ -304,7 +423,6 @@ const App: React.FC = () => {
 
   return (
     <main className="relative min-h-screen bg-white text-black">
-      {/* 全局悬浮导航栏 */}
       <Navbar 
         isVisible={showNavbar} 
         currentPage={currentPage} 
@@ -316,12 +434,10 @@ const App: React.FC = () => {
         onBack={goBack}
       />
       
-      {/* 动态页面内容切换 */}
       {['project-detail', 'blog-detail', 'insights', 'portfolio'].includes(currentPage) ? (
         renderDetail()
       ) : (
         <>
-          {/* 1. HERO 模块 - 首页首屏 */}
           <section id="home-section" className="relative min-h-[90vh] md:min-h-screen flex flex-col px-4 md:px-12 pt-16 md:pt-[42px] pb-12 overflow-hidden">
             <BouncingPhoto />
             <div className="z-20">
@@ -354,7 +470,6 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* 2. PORTFOLIO 模块 - 作品展示区域 */}
           <section id="portfolio-section" className="px-4 md:px-12 mb-32 pt-20">
             <div className="flex items-center gap-2 md:gap-4 mb-10 border-t pt-10 border-gray-100 overflow-x-auto no-scrollbar">
               {translations.tabs.map(tab => (
@@ -379,13 +494,6 @@ const App: React.FC = () => {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i+1}</p>
                     <h3 className="text-xl md:text-2xl font-bold">{language === 'zh' ? proj.nameZh : proj.name}</h3>
                   </div>
-                  <div className="absolute top-6 md:top-10 right-6 md:right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-black flex items-center justify-center bg-white/50 backdrop-blur-sm">
-                      <svg className="w-5 h-5 md:w-6 md:h-6 -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    </div>
-                  </div>
                 </div>
               ))}
             </div>
@@ -394,12 +502,11 @@ const App: React.FC = () => {
                 onClick={() => handlePageChange('portfolio')}
                 className="px-8 py-4 bg-black text-white rounded-full font-bold text-sm interactive hover:bg-gray-800 transition-colors"
               >
-                {language === 'zh' ? '查看更多作品' : 'Explore All Works'}
+                {language === 'zh' ? '查看更多作品' : 'Explore Portfolio'}
               </button>
             </div>
           </section>
 
-          {/* 3. BLOG 模块 - 见解文章列表 (预览版) */}
           <section id="blog-section" className="px-4 md:px-12 border-t border-gray-100 pt-32 mb-40">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
               <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
@@ -411,7 +518,7 @@ const App: React.FC = () => {
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {translations.articles.map((article, idx) => (
+              {translations.articles.slice(0, 2).map((article, idx) => (
                 <article key={idx} className="group flex flex-col interactive" onClick={() => openArticle(article.id)}>
                   <div className="flex justify-between items-center mb-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">
                     <span>{article.tag}</span>
@@ -429,10 +536,9 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* 4. FAQ 模块 - 常见问题解答 */}
           <section className="bg-white py-32 md:py-40 px-4 md:px-12 w-full">
             <div className="max-w-[800px] mx-auto">
-              <h2 className="font-huge text-[15vw] md:text-[8rem] uppercase tracking-tighter text-center mb-24 leading-[0.8]">{translations.faq.header}</h2>
+              <h2 className="font-huge text-[10vw] md:text-[8rem] uppercase tracking-tighter text-center mb-24 leading-[0.8]">{translations.faq.header}</h2>
               <div className="space-y-4">
                 {translations.faq.items.map((item, idx) => (
                   <div 
@@ -446,7 +552,6 @@ const App: React.FC = () => {
                         <span className={`text-lg md:text-2xl font-light transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>{openFaq === idx ? '−' : '+'}</span>
                       </div>
                     </div>
-                    {/* 展开/收起动画逻辑 */}
                     <div className={`grid transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'}`}>
                       <div className="overflow-hidden">
                         <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-3xl">{item.a}</p>
@@ -460,10 +565,8 @@ const App: React.FC = () => {
         </>
       )}
 
-      {/* 5. CONTACT MODAL - 浮层联系弹窗 */}
       <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} language={language} />
       
-      {/* 6. FOOTER - 页脚版权信息 */}
       <footer className="py-24 md:py-32 border-t border-gray-100 w-full bg-white">
         <div className="w-full px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="text-xl md:text-2xl font-black uppercase tracking-tighter">{translations.copyright}</div>
