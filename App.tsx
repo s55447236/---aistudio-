@@ -96,7 +96,8 @@ const App: React.FC = () => {
   const [showNavbar, setShowNavbar] = useState(false); // 导航栏显隐控制
   const [openFaq, setOpenFaq] = useState<number | null>(0); // 当前展开的 FAQ 索引
   const [isContactModalOpen, setIsContactModalOpen] = useState(false); // 联系弹窗控制
-  
+  const [backToPage, setBackToPage] = useState<Page>('insights'); // 记录文章详情页的返回目标
+
   const [activeTab, setActiveTab] = useState('All'); // Initial tab in English
 
   // 项目列表数据
@@ -153,6 +154,10 @@ const App: React.FC = () => {
 
   // 进入文章详情页
   const openArticle = (id: string) => {
+    // 记录进入详情前的页面，用于底部的 VIEW ALL 返回逻辑
+    if (currentPage === 'home' || currentPage === 'insights') {
+      setBackToPage(currentPage);
+    }
     setSelectedArticleId(id);
     setSelectedProjectId(null);
     setCurrentPage('blog-detail');
@@ -259,7 +264,7 @@ const App: React.FC = () => {
         items:[
           { q: "你的典型设计工作流程是怎样的？", a: "我的流程包括四个核心阶段：深度调研、策略定义、创意设计以及协作交付。我坚持以用户为中心，在每个阶段进行数据验证。" },
           { q: "面对技术限制，你如何处理无法实现的理想方案？", a: "我会与开发团队协作寻求“优雅降级”的替代方案，在确保技术可行性的前提下，最大程度保留设计的核心交互体验。" },
-          { q: "你如何平衡用户需求与业务目标", a: "我通过将用户痛点精准转化为业务增长指标，利用 MVP 思路在确保商业价值实现的同时，为用户提供最优路径。" }
+          { q: "你如何平衡用户需求与业务目标", a: "我通过将用户痛点精准转化为业务增长指标，利用 MVP 思路在确保商业价值实现的同时，为用户提供最优路径。" },
           { q: "当利益相关者强烈反对你的方案时，你会怎么办？", a: "我会以事实 and 数据为依据进行“去主观化”沟通，并提议通过 A/B 测试或快速原型验证来寻求共识，而非陷入审美争论。" },
           { q: "你认为 AI 将如何改变设计师的角色？", a: "AI 将设计师从繁琐的重复性执行中解放出来，使其重心转向更深层的需求定义、系统性思考以及对人机协作逻辑的把控。" }
         ]
@@ -354,7 +359,7 @@ const App: React.FC = () => {
       faq: {
         header: "PRACTICAL METHODS",
         items: [
-          { q: "What is your typical product design workflow?", a: "My workflow follows four main stages: Discovery & Research, Strategic Definition, Creative Execution, and Collaborative Handoff." }
+          { q: "What is your typical product design workflow?", a: "My workflow follows four main stages: Discovery & Research, Strategic Definition, Creative Execution, and Collaborative Handoff." },
           { q: "How do you handle idealized solutions that cannot be implemented due to technical constraints?", a: "I collaborate with the development team to seek 'graceful degradation' alternatives. My goal is to maximize the preservation of the core interaction experience while ensuring technical feasibility." },
           { q: "How do you balance user needs with business goals?", a: "I precisely translate user pain points into business growth metrics. By utilizing an MVP (Minimum Viable Product) mindset, I ensure the realization of business value while providing the optimal path for the user." },
           { q: "What do you do when stakeholders strongly oppose your proposal?", a: "I focus on 'de-subjectivized' communication based on facts and data. I typically propose seeking consensus through A/B testing or rapid prototyping rather than getting bogged down in subjective aesthetic debates." },
@@ -412,7 +417,8 @@ const App: React.FC = () => {
             default: return null;
         }
     } else if (currentPage === 'blog-detail') {
-        return <BlogDetail articleId={selectedArticleId || ''} language={language} onBack={() => setCurrentPage('insights')} />;
+        // 更新 onBack 逻辑，使其返回到来源页面并滚动到顶部
+        return <BlogDetail articleId={selectedArticleId || ''} language={language} onBack={() => handlePageChange(backToPage)} />;
     } else if (currentPage === 'insights') {
         return <InsightsPage language={language} articles={translations.articles as Article[]} onArticleClick={openArticle} onBack={goBack} />;
     } else if (currentPage === 'portfolio') {
