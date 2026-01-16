@@ -8,6 +8,8 @@ import ProjectDetail from './components/ProjectDetail';
 import AviaDataDetail from './components/AviaDataDetail';
 import FireSafeDetail from './components/FireSafeDetail';
 import NeighborDetail from './components/NeighborDetail';
+import DigitalTwinDetail from './components/DigitalTwinDetail';
+import DesignSystemDetail from './components/DesignSystemDetail';
 
 const BouncingPhoto: React.FC = () => {
   const [position, setPosition] = useState({ x: Math.random() * 200, y: Math.random() * 200 });
@@ -130,8 +132,8 @@ const App: React.FC = () => {
   const translations = {
     zh: {
       hero: ["设计之道", "归于", "自然 ."],
-      intro: "我是一名居住在柏林的数字设计总监，专注于创造网站、应用及平台等数字体验。目前在 Koto Studio 供职。",
-      tabs: ['全部', 'SaaS', '数据可视化'],
+      intro: "我是一名居住在上海的数字设计专家，专注于创造网站、应用及平台等数字体验。擅长复杂系统与数据可视化。",
+      tabs: ['全部', 'SaaS', '数据可视化', '方法论'],
       project: "案例研究",
       blogHeader: "见解",
       blogAction: "阅读全文",
@@ -162,15 +164,15 @@ const App: React.FC = () => {
           { q: "你的典型设计工作流程是怎样的？", a: "我的流程包括四个核心阶段：深度调研、策略定义、创意设计以及协作交付。我坚持以用户为中心，在每个阶段进行数据验证。" },
           { q: "你最擅长哪些设计工具？", a: "Figma 是我的核心工具。同时熟练掌握 Adobe CC (PS, AI, AE) 进行视觉呈现，并利用 Blender/Spline 进行 3D 辅助。" },
           { q: "你如何处理远程协作？", a: "我擅长异步沟通，使用 Notion 记录文档，Slack 进行即时通讯，Loom 录制设计说明，确保跨时区协作高效清晰。" },
-          { q: "你最擅长哪些行业的设计？", a: "我在金融科技 (FinTech)、SaaS 平台和高奢电商领域有深厚经验。擅长将复杂的信息架构转化为直观的产品。" },
+          { q: "你最擅长哪些行业的设计？", a: "我在金融科技 (FinTech)、SaaS 平台和数字孪生大屏领域有深厚经验。擅长将复杂的信息架构转化为直观的产品。" },
           { q: "如何确保设计稿在开发阶段被完美还原？", a: "我提供精准的设计规范和交互说明。通过参与早期可行性评估和定期的 Design QA，确保上线产品与预期一致。" }
         ]
       }
     },
     en: {
       hero: ["GOOD DESIGN", "FEELS", "NATURAL ."],
-      intro: "I'm a Berlin-based Digital Design Director creating websites, apps, and platforms. Currently crafting experiences at Koto Studio.",
-      tabs: ['All', 'SaaS', 'Data Viz'],
+      intro: "I'm a Shanghai-based Digital Design Expert creating websites, apps, and platforms. Specialized in complex systems and data visualization.",
+      tabs: ['All', 'SaaS', 'Data Viz', 'Insights'],
       project: "Case Study",
       blogHeader: "INSIGHTS",
       blogAction: "Read Article",
@@ -201,7 +203,7 @@ const App: React.FC = () => {
           { q: "What is your typical product design workflow?", a: "My workflow follows four main stages: Discovery & Research, Strategic Definition, Creative Execution, and Collaborative Handoff. I stick to a user-centric approach, ensuring data validation and iteration at every step." },
           { q: "What tools do you use for your design work?", a: "Figma is my primary tool for prototyping and design systems. I also use Adobe Creative Cloud (PS, AI, AE) for visual assets and Blender or Spline for 3D elements." },
           { q: "How do you handle remote or asynchronous collaboration?", a: "I'm an expert at async communication. I use Notion for documentation, Slack/Discord for messaging, and Loom for video explanations. Clarity and consistency are my top priorities." },
-          { q: "Which industries do you have the most experience in?", a: "I have extensive experience in FinTech, SaaS platforms, and E-commerce. I specialize in turning complex information architectures into intuitive, brand-aligned digital products." },
+          { q: "Which industries do you have the most experience in?", a: "I have extensive experience in FinTech, SaaS platforms, and Digital Twins. I specialize in turning complex information architectures into intuitive digital products." },
           { q: "How do you ensure your designs are implemented correctly?", a: "I provide detailed annotations and standardized components. I stay involved in early feasibility checks and perform regular Design QA to ensure the final product matches the design intent." }
         ]
       }
@@ -215,27 +217,37 @@ const App: React.FC = () => {
   };
 
   const getNavbarTitle = () => {
-    if (selectedProjectId === 'project-1') return "GPU CONTAINER SERVICE";
-    if (selectedProjectId === 'project-2') return "AVIA DATA ENGINE";
-    if (selectedProjectId === 'project-3') return "FIRE SAFE PLATFORM";
-    if (selectedProjectId === 'project-4') return "NEIGHBOR HUB";
-    return undefined;
+    const titles: Record<string, string> = {
+      'project-1': "GPU CONTAINER SERVICE",
+      'project-2': "AVIA DATA ENGINE",
+      'project-3': "FIRE SAFE PLATFORM",
+      'project-4': "NEIGHBOR HUB",
+      'project-5': "TWIN CORE METHODOLOGY",
+      'project-6': "DESIGN SYSTEMS"
+    };
+    return titles[selectedProjectId || ''];
   }
 
   const renderProjectDetail = () => {
     switch(selectedProjectId) {
-      case 'project-1':
-        return <ProjectDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      case 'project-2':
-        return <AviaDataDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      case 'project-3':
-        return <FireSafeDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      case 'project-4':
-        return <NeighborDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
-      default:
-        return null;
+      case 'project-1': return <ProjectDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      case 'project-2': return <AviaDataDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      case 'project-3': return <FireSafeDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      case 'project-4': return <NeighborDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      case 'project-5': return <DigitalTwinDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      case 'project-6': return <DesignSystemDetail language={language} onBack={goBack} onContactClick={() => setIsContactModalOpen(true)} />;
+      default: return null;
     }
   };
+
+  const projectList = [
+    { id: 'project-1', name: 'GPU Container Service', nameZh: 'GPU 容器云' },
+    { id: 'project-2', name: 'Avia Data Engine', nameZh: '航产数智' },
+    { id: 'project-3', name: 'Fire Safe Platform', nameZh: '智消云管' },
+    { id: 'project-4', name: 'Neighbor Hub', nameZh: '邻里生活' },
+    { id: 'project-5', name: 'Twin Core Strategy', nameZh: '数字孪生方法论' },
+    { id: 'project-6', name: 'Design Systems', nameZh: '设计规范体系' }
+  ];
 
   return (
     <main className="relative min-h-screen bg-white text-black">
@@ -254,10 +266,8 @@ const App: React.FC = () => {
         renderProjectDetail()
       ) : (
         <>
-          {/* Hero Section */}
           <section id="home-section" className="relative min-h-screen flex flex-col px-6 md:px-12 pt-[42px] pb-12 overflow-hidden">
             <BouncingPhoto />
-            
             <div className="z-20">
               <h1 className="font-huge text-[15vw] md:text-[12rem] uppercase leading-[0.85] tracking-tighter select-none">
                 <span className="block">{translations.hero[0]}</span>
@@ -265,24 +275,15 @@ const App: React.FC = () => {
                 <span className="block">{translations.hero[2]}</span>
               </h1>
             </div>
-
-            {/* Status Bar */}
             <div className="z-20 flex justify-between items-center mt-8 mb-12">
               <div className="flex gap-2">
-                <button 
-                  onClick={() => handlePageChange('portfolio')}
-                  className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive"
-                >
+                <button onClick={() => handlePageChange('portfolio')} className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive">
                   {translations.navItems.portfolio}
                 </button>
-                <button 
-                  onClick={() => handlePageChange('blog')}
-                  className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive"
-                >
+                <button onClick={() => handlePageChange('blog')} className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive">
                   {translations.navItems.blog}
                 </button>
               </div>
-              
               <div className="flex">
                 <div className="px-6 py-2 bg-[#f0f2f4] rounded-full text-sm font-medium flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -290,54 +291,36 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
-
             <div className="z-20 flex justify-end mt-auto mb-12">
               <div className="max-w-xs md:max-w-md">
-                <p className="text-base md:text-xl leading-[1.3] text-black font-bold">
-                  {translations.intro}
-                </p>
+                <p className="text-base md:text-xl leading-[1.3] text-black font-bold">{translations.intro}</p>
               </div>
             </div>
           </section>
 
-          {/* Portfolio Grid Section */}
           <section id="portfolio-section" className="px-6 md:px-12 mb-32 pt-20">
             <div className="flex items-center gap-4 mb-10 border-t pt-10 border-gray-100">
               {translations.tabs.map(tab => (
                 <button 
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
-                    activeTab === tab ? 'bg-black text-white' : 'bg-white text-black border border-gray-200 hover:border-black'
-                  }`}
+                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${activeTab === tab ? 'bg-black text-white' : 'bg-white text-black border border-gray-200 hover:border-black'}`}
                 >
                   {tab}
                 </button>
               ))}
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[1, 2, 3, 4].map((i) => (
+              {projectList.map((proj, i) => (
                 <div 
-                  key={i} 
-                  onClick={() => {
-                    if (i === 1) openProject('project-1');
-                    if (i === 2) openProject('project-2');
-                    if (i === 3) openProject('project-3');
-                    if (i === 4) openProject('project-4');
-                  }}
+                  key={proj.id} 
+                  onClick={() => openProject(proj.id)}
                   className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive"
                 >
                   <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="absolute bottom-10 left-10 transition-transform duration-500 group-hover:translate-x-2">
-                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i}</p>
-                    <h3 className="text-2xl font-bold">
-                      {i === 1 ? 'GPU Container Service' : 
-                       i === 2 ? (language === 'zh' ? '航产数智' : 'Avia Data Engine') : 
-                       i === 3 ? (language === 'zh' ? '智消云管' : 'Fire Safe Platform') :
-                       i === 4 ? (language === 'zh' ? '邻里生活' : 'Neighbor Hub') :
-                       translations.project + ' ' + i}
-                    </h3>
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i+1}</p>
+                    <h3 className="text-2xl font-bold">{language === 'zh' ? proj.nameZh : proj.name}</h3>
                   </div>
                   <div className="absolute top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
                     <div className="w-12 h-12 rounded-full border border-black flex items-center justify-center">
@@ -351,15 +334,11 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Blog Section */}
           <section id="blog-section" className="px-6 md:px-12 border-t border-gray-100 pt-32 mb-40">
             <div className="flex justify-between items-end mb-16">
               <h2 className="text-6xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
-              <button className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors interactive">
-                View All Thoughts →
-              </button>
+              <button className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors interactive">View All Thoughts →</button>
             </div>
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {translations.articles.map((article, idx) => (
                 <article key={idx} className="group flex flex-col interactive">
@@ -368,30 +347,20 @@ const App: React.FC = () => {
                     <span>{article.date}</span>
                   </div>
                   <div className="mb-6 h-[1px] w-full bg-gray-100 group-hover:bg-black transition-colors duration-500"></div>
-                  <h3 className="text-2xl font-bold leading-tight mb-4 group-hover:translate-x-1 transition-transform duration-500">
-                    {article.title}
-                  </h3>
-                  <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8 line-clamp-2">
-                    {article.desc}
-                  </p>
+                  <h3 className="text-2xl font-bold leading-tight mb-4 group-hover:translate-x-1 transition-transform duration-500">{article.title}</h3>
+                  <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8 line-clamp-2">{article.desc}</p>
                   <div className="mt-auto flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all group-hover:gap-4">
                     {translations.blogAction}
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </div>
                 </article>
               ))}
             </div>
           </section>
 
-          {/* FAQ Section */}
           <section className="bg-white py-40 px-6 md:px-12 w-full">
             <div className="max-w-[1000px] mx-auto">
-              <h2 className="font-huge text-[10vw] md:text-[8rem] uppercase tracking-tighter text-center mb-32 leading-[0.8]">
-                {translations.faq.header}
-              </h2>
-
+              <h2 className="font-huge text-[10vw] md:text-[8rem] uppercase tracking-tighter text-center mb-32 leading-[0.8]">{translations.faq.header}</h2>
               <div className="space-y-4">
                 {translations.faq.items.map((item, idx) => (
                   <div 
@@ -400,24 +369,14 @@ const App: React.FC = () => {
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                   >
                     <div className="flex justify-between items-center cursor-none gap-8">
-                      <h3 className="text-lg md:text-2xl leading-[1.2] font-bold text-black flex-1">
-                        {item.q}
-                      </h3>
+                      <h3 className="text-lg md:text-2xl leading-[1.2] font-bold text-black flex-1">{item.q}</h3>
                       <div className={`flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'bg-[#f3f3f3] text-black group-hover:bg-gray-200'}`}>
-                        <span className={`text-xl md:text-2xl font-light transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>
-                          {openFaq === idx ? '−' : '+'}
-                        </span>
+                        <span className={`text-xl md:text-2xl font-light transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>{openFaq === idx ? '−' : '+'}</span>
                       </div>
                     </div>
-                    <div 
-                      className={`grid transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-                        openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'
-                      }`}
-                    >
+                    <div className={`grid transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${openFaq === idx ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'}`}>
                       <div className="overflow-hidden">
-                        <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-3xl">
-                          {item.a}
-                        </p>
+                        <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-3xl">{item.a}</p>
                       </div>
                     </div>
                   </div>
@@ -428,11 +387,7 @@ const App: React.FC = () => {
         </>
       )}
 
-      <ContactModal 
-        isOpen={isContactModalOpen} 
-        onClose={() => setIsContactModalOpen(false)} 
-        language={language} 
-      />
+      <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} language={language} />
       
       <footer className="py-32 border-t border-gray-100 w-full bg-white">
         <div className="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-12">
