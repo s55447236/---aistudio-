@@ -20,10 +20,19 @@ import PortfolioPage from './components/PortfolioPage';
  * 实现了一个在屏幕内随机反弹的圆形头像
  */
 const BouncingPhoto: React.FC = () => {
-  const [position, setPosition] = useState({ x: Math.random() * 200, y: Math.random() * 200 });
-  const [velocity, setVelocity] = useState({ x: 1.5, y: 1.5 });
+  const [position, setPosition] = useState({ x: Math.random() * 100, y: Math.random() * 100 });
+  const [velocity, setVelocity] = useState({ x: 1.2, y: 1.2 });
   const containerRef = useRef<HTMLDivElement>(null);
-  const size = 120;
+  const [size, setSize] = useState(120);
+
+  useEffect(() => {
+    const updateSize = () => {
+      setSize(window.innerWidth < 768 ? 80 : 120);
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
   useEffect(() => {
     let animationFrameId: number;
@@ -58,7 +67,7 @@ const BouncingPhoto: React.FC = () => {
 
     animationFrameId = requestAnimationFrame(move);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [velocity]);
+  }, [velocity, size]);
 
   return (
     <div ref={containerRef} className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
@@ -112,8 +121,8 @@ const App: React.FC = () => {
       const portfolioSection = document.getElementById('portfolio-section');
       if (portfolioSection) {
         const portfolioTop = portfolioSection.offsetTop;
-        // 当滚动到作品集区域时显示导航栏
-        setShowNavbar(window.scrollY > portfolioTop - 100);
+        // 当滚动到作品集区域（或越过临界点）时显示导航栏
+        setShowNavbar(window.scrollY > portfolioTop - 120);
       } else {
         setShowNavbar(false);
       }
@@ -253,18 +262,18 @@ const App: React.FC = () => {
   const getNavbarTitle = () => {
     if (currentPage === 'project-detail') {
         const titles: Record<string, string> = {
-            'project-1': "GPU CONTAINER SERVICE",
-            'project-2': "AVIA DATA ENGINE",
-            'project-3': "FIRE SAFE PLATFORM",
-            'project-4': "NEIGHBOR HUB",
-            'project-5': "TWIN CORE METHODOLOGY",
-            'project-6': "DESIGN SYSTEMS"
+            'project-1': "GPU INFRA",
+            'project-2': "AVIA DATA",
+            'project-3': "FIRE SAFE",
+            'project-4': "NEIGHBOR",
+            'project-5': "TWIN CORE",
+            'project-6': "DESIGN SYS"
         };
         return titles[selectedProjectId || ''];
     } else if (currentPage === 'blog-detail') {
         const titles: Record<string, string> = {
-            'ai-impact': "AI ON CREATIVE WORKFLOWS",
-            'minimalism-evolution': "MINIMALISM IN MODERN UI"
+            'ai-impact': "AI TRANSFORMATION",
+            'minimalism-evolution': "MODERN MINIMALISM"
         };
         return titles[selectedArticleId || ''];
     }
@@ -313,26 +322,26 @@ const App: React.FC = () => {
       ) : (
         <>
           {/* 1. HERO 模块 - 首页首屏 */}
-          <section id="home-section" className="relative min-h-screen flex flex-col px-6 md:px-12 pt-[42px] pb-12 overflow-hidden">
+          <section id="home-section" className="relative min-h-[90vh] md:min-h-screen flex flex-col px-4 md:px-12 pt-16 md:pt-[42px] pb-12 overflow-hidden">
             <BouncingPhoto />
             <div className="z-20">
-              <h1 className="font-huge text-[15vw] md:text-[12rem] uppercase leading-[0.85] tracking-tighter select-none">
+              <h1 className="font-huge text-[18vw] md:text-[12rem] uppercase leading-[0.8] tracking-tighter select-none mb-12">
                 <span className="block">{translations.hero[0]}</span>
                 <span className="block">{translations.hero[1]}</span>
                 <span className="block">{translations.hero[2]}</span>
               </h1>
             </div>
-            <div className="z-20 flex justify-between items-center mt-8 mb-12">
+            <div className="z-20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mt-8 mb-12">
               <div className="flex gap-2">
-                <button onClick={() => handlePageChange('portfolio')} className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive">
+                <button onClick={() => handlePageChange('portfolio')} className="px-5 md:px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-xs md:text-sm font-bold interactive">
                   {translations.navItems.portfolio}
                 </button>
-                <button onClick={() => handlePageChange('insights')} className="px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-sm font-medium interactive">
+                <button onClick={() => handlePageChange('insights')} className="px-5 md:px-6 py-2 bg-[#f0f2f4] hover:bg-[#e4e7ea] transition-colors rounded-full text-xs md:text-sm font-bold interactive">
                   {translations.navItems.blog}
                 </button>
               </div>
               <div className="flex">
-                <div className="px-6 py-2 bg-[#f0f2f4] rounded-full text-sm font-medium flex items-center gap-2">
+                <div className="px-5 md:px-6 py-2 bg-[#f0f2f4] rounded-full text-xs md:text-sm font-bold flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                   {translations.jobStatus}
                 </div>
@@ -340,40 +349,40 @@ const App: React.FC = () => {
             </div>
             <div className="z-20 flex justify-end mt-auto mb-12">
               <div className="max-w-xs md:max-w-md">
-                <p className="text-base md:text-xl leading-[1.3] text-black font-bold">{translations.intro}</p>
+                <p className="text-base md:text-xl leading-[1.3] text-black font-bold text-right sm:text-left">{translations.intro}</p>
               </div>
             </div>
           </section>
 
           {/* 2. PORTFOLIO 模块 - 作品展示区域 */}
-          <section id="portfolio-section" className="px-6 md:px-12 mb-32 pt-20">
-            <div className="flex items-center gap-4 mb-10 border-t pt-10 border-gray-100">
+          <section id="portfolio-section" className="px-4 md:px-12 mb-32 pt-20">
+            <div className="flex items-center gap-2 md:gap-4 mb-10 border-t pt-10 border-gray-100 overflow-x-auto no-scrollbar">
               {translations.tabs.map(tab => (
                 <button 
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${activeTab === tab ? 'bg-black text-white' : 'bg-white text-black border border-gray-200 hover:border-black'}`}
+                  className={`px-5 md:px-6 py-2 rounded-full text-xs md:text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab ? 'bg-black text-white' : 'bg-white text-black border border-gray-200 hover:border-black'}`}
                 >
                   {tab}
                 </button>
               ))}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {projectList.map((proj, i) => (
                 <div 
                   key={proj.id} 
                   onClick={() => openProject(proj.id)}
-                  className="aspect-[4/3] bg-[#f9f9f9] rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive"
+                  className="aspect-[4/3] bg-[#f9f9f9] rounded-[32px] md:rounded-[40px] overflow-hidden group relative border border-gray-100 transition-transform duration-700 hover:scale-[1.01] interactive"
                 >
                   <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute bottom-10 left-10 transition-transform duration-500 group-hover:translate-x-2">
-                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i+1}</p>
-                    <h3 className="text-2xl font-bold">{language === 'zh' ? proj.nameZh : proj.name}</h3>
+                  <div className="absolute bottom-6 md:bottom-10 left-6 md:left-10 transition-transform duration-500 group-hover:translate-x-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Project 0{i+1}</p>
+                    <h3 className="text-xl md:text-2xl font-bold">{language === 'zh' ? proj.nameZh : proj.name}</h3>
                   </div>
-                  <div className="absolute top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
-                    <div className="w-12 h-12 rounded-full border border-black flex items-center justify-center">
-                      <svg className="w-6 h-6 -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  <div className="absolute top-6 md:top-10 right-6 md:right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-black flex items-center justify-center bg-white/50 backdrop-blur-sm">
+                      <svg className="w-5 h-5 md:w-6 md:h-6 -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>
                     </div>
                   </div>
@@ -383,7 +392,7 @@ const App: React.FC = () => {
             <div className="mt-12 flex justify-center">
               <button 
                 onClick={() => handlePageChange('portfolio')}
-                className="px-8 py-3 bg-black text-white rounded-full font-bold text-sm interactive hover:bg-gray-800 transition-colors"
+                className="px-8 py-4 bg-black text-white rounded-full font-bold text-sm interactive hover:bg-gray-800 transition-colors"
               >
                 {language === 'zh' ? '查看更多作品' : 'Explore All Works'}
               </button>
@@ -391,9 +400,9 @@ const App: React.FC = () => {
           </section>
 
           {/* 3. BLOG 模块 - 见解文章列表 (预览版) */}
-          <section id="blog-section" className="px-6 md:px-12 border-t border-gray-100 pt-32 mb-40">
-            <div className="flex justify-between items-end mb-16">
-              <h2 className="text-6xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
+          <section id="blog-section" className="px-4 md:px-12 border-t border-gray-100 pt-32 mb-40">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
+              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">{translations.blogHeader}</h2>
               <button 
                 onClick={() => handlePageChange('insights')}
                 className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors interactive"
@@ -408,12 +417,12 @@ const App: React.FC = () => {
                     <span>{article.tag}</span>
                     <span>{article.date}</span>
                   </div>
-                  <div className="mb-6 h-[1px] w-full bg-gray-100 group-hover:bg-black transition-colors duration-500"></div>
-                  <h3 className="text-2xl font-bold leading-tight mb-4 group-hover:translate-x-1 transition-transform duration-500">{article.title}</h3>
+                  <div className="mb-6 h-[1.5px] w-full bg-gray-100 group-hover:bg-black transition-colors duration-500"></div>
+                  <h3 className="text-xl md:text-2xl font-bold leading-tight mb-4 group-hover:translate-x-1 transition-transform duration-500">{article.title}</h3>
                   <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8 line-clamp-2">{article.desc}</p>
-                  <div className="mt-auto flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all group-hover:gap-4">
+                  <div className="mt-auto flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all group-hover:gap-4">
                     {translations.blogAction}
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </div>
                 </article>
               ))}
@@ -421,20 +430,20 @@ const App: React.FC = () => {
           </section>
 
           {/* 4. FAQ 模块 - 常见问题解答 */}
-          <section className="bg-white py-40 px-6 md:px-12 w-full">
-            <div className="max-w-[1000px] mx-auto">
-              <h2 className="font-huge text-[10vw] md:text-[8rem] uppercase tracking-tighter text-center mb-32 leading-[0.8]">{translations.faq.header}</h2>
+          <section className="bg-white py-32 md:py-40 px-4 md:px-12 w-full">
+            <div className="max-w-[800px] mx-auto">
+              <h2 className="font-huge text-[15vw] md:text-[8rem] uppercase tracking-tighter text-center mb-24 leading-[0.8]">{translations.faq.header}</h2>
               <div className="space-y-4">
                 {translations.faq.items.map((item, idx) => (
                   <div 
                     key={idx} 
-                    className={`bg-white rounded-[40px] p-4 md:p-8 transition-all duration-700 border border-black/5 faq-item-hover interactive group overflow-hidden`}
+                    className={`bg-white rounded-[32px] md:rounded-[40px] p-5 md:p-8 transition-all duration-700 border border-black/5 faq-item-hover interactive group overflow-hidden`}
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                   >
-                    <div className="flex justify-between items-center cursor-none gap-8">
-                      <h3 className="text-lg md:text-2xl leading-[1.2] font-bold text-black flex-1 transition-colors duration-500 group-hover:text-black">{item.q}</h3>
+                    <div className="flex justify-between items-center cursor-none gap-6">
+                      <h3 className="text-base md:text-2xl leading-[1.2] font-bold text-black flex-1 transition-colors duration-500 group-hover:text-black">{item.q}</h3>
                       <div className={`flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-black text-white' : 'bg-[#f3f3f3] text-black group-hover:bg-black group-hover:text-white'}`}>
-                        <span className={`text-xl md:text-2xl font-light transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>{openFaq === idx ? '−' : '+'}</span>
+                        <span className={`text-lg md:text-2xl font-light transition-transform duration-500 ${openFaq === idx ? 'rotate-180' : 'rotate-0'}`}>{openFaq === idx ? '−' : '+'}</span>
                       </div>
                     </div>
                     {/* 展开/收起动画逻辑 */}
@@ -455,10 +464,10 @@ const App: React.FC = () => {
       <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} language={language} />
       
       {/* 6. FOOTER - 页脚版权信息 */}
-      <footer className="py-32 border-t border-gray-100 w-full bg-white">
-        <div className="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-12">
-          <div className="text-2xl font-black uppercase tracking-tighter">{translations.copyright}</div>
-          <div className="flex gap-16 text-sm font-bold uppercase tracking-widest">
+      <footer className="py-24 md:py-32 border-t border-gray-100 w-full bg-white">
+        <div className="w-full px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="text-xl md:text-2xl font-black uppercase tracking-tighter">{translations.copyright}</div>
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16 text-[10px] md:text-xs font-black uppercase tracking-widest">
             <a href="#" className="hover:text-gray-400 transition-colors interactive">Behance</a>
             <a href="#" className="hover:text-gray-400 transition-colors interactive">Dribbble</a>
             <a href="#" className="hover:text-gray-400 transition-colors interactive">Instagram</a>

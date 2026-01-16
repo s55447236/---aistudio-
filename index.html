@@ -6,24 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Designer Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            screens: {
+              'xs': '400px',
+            }
+          }
+        }
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-      * {
-        cursor: none !important;
-      }
       body {
         font-family: 'Inter', sans-serif;
         background-color: #ffffff;
         color: #000000;
         overflow-x: hidden;
       }
+
       .font-huge {
         font-weight: 900;
         letter-spacing: -0.05em;
         line-height: 0.85;
       }
+
       #custom-cursor {
         width: 20px;
         height: 20px;
@@ -35,21 +45,43 @@
         mix-blend-mode: difference;
         transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         transform: translate(-50%, -50%) scale(1);
-        left: 0;
-        top: 0;
+        left: -100px;
+        top: -100px;
+        display: none; 
       }
-      #custom-cursor.is-hovering {
-        transform: translate(-50%, -50%) scale(2.5);
-      }
-      #custom-cursor.is-active {
-        transform: translate(-50%, -50%) scale(0.8);
-      }
-      #custom-cursor.is-hovering.is-active {
-        transform: translate(-50%, -50%) scale(1.8);
+
+      /* Desktop-only Cursor Logic */
+      @media (hover: hover) and (pointer: fine) {
+        * {
+          cursor: none !important;
+        }
+        
+        #custom-cursor {
+          display: block;
+        }
+
+        #custom-cursor.is-hovering {
+          transform: translate(-50%, -50%) scale(2.5);
+        }
+
+        #custom-cursor.is-active {
+          transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        #custom-cursor.is-hovering.is-active {
+          transform: translate(-50%, -50%) scale(1.8);
+        }
       }
       
-      a, button {
-        cursor: none !important;
+      /* Reset for touch devices to ensure native cursor behavior */
+      @media (pointer: coarse) {
+        * {
+          cursor: auto !important;
+        }
+        
+        #custom-cursor {
+          display: none !important;
+        }
       }
 
       /* Custom scrollbar for premium feel */
@@ -71,68 +103,92 @@
       .faq-item-hover::after {
         content: '';
         position: absolute;
-        inset: -1px; /* 覆盖原有轻微边框 */
-        border: 1.5px solid black;
+        inset: -1px;
+        border: 2px solid black;
         border-radius: 40px;
         pointer-events: none;
-        clip-path: inset(0 100% 0 0); /* 初始状态：宽度为0 */
+        clip-path: inset(0 100% 0 0);
         transition: clip-path 0.6s cubic-bezier(0.19, 1, 0.22, 1);
         z-index: 10;
       }
-      .faq-item-hover:hover::after {
-        clip-path: inset(0 0 0 0); /* 悬停状态：宽度为100% */
+      @media (min-width: 768px) {
+        .faq-item-hover:hover::after {
+          clip-path: inset(0 0 0 0);
+        }
+      }
+
+      /* Hide horizontal scrollbar in filters */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^18.2.0",
-    "react-dom/": "https://esm.sh/react-dom@^18.2.0/",
-    "react/": "https://esm.sh/react@^18.2.0/"
-  }
-}
-</script>
-</head>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^18.2.0",
+        "react-dom/": "https://esm.sh/react-dom@^18.2.0/",
+        "react/": "https://esm.sh/react@^18.2.0/"
+      }
+    }
+    </script>
+  </head>
   <body>
     <div id="custom-cursor"></div>
     <div id="root"></div>
     <script>
       const cursor = document.getElementById('custom-cursor');
-      let mouseX = 0;
-      let mouseY = 0;
+      let mouseX = -100;
+      let mouseY = -100;
 
-      document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        cursor.style.left = mouseX + 'px';
-        cursor.style.top = mouseY + 'px';
-      });
+      // Detection for touch capability
+      const isTouchDevice = () => {
+        return (('ontouchstart' in window) ||
+          (navigator.maxTouchPoints > 0) ||
+          (navigator.msMaxTouchPoints > 0));
+      };
 
-      document.addEventListener('mouseover', (e) => {
-        const target = e.target;
-        const isInteractive = target.closest('a, button, [role="button"], .interactive');
-        const isInsideNav = target.closest('nav');
+      // Only run visual cursor logic on non-touch devices with hover support
+      if (!isTouchDevice() && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+          cursor.style.left = mouseX + 'px';
+          cursor.style.top = mouseY + 'px';
+        });
 
-        if (isInteractive && !isInsideNav) {
-          cursor.classList.add('is-hovering');
-        } else {
-          cursor.classList.remove('is-hovering');
-        }
-      });
+        document.addEventListener('mouseover', (e) => {
+          const target = e.target;
+          const isInteractive = target.closest('a, button, [role="button"], .interactive');
+          const isInsideNav = target.closest('nav');
 
-      document.addEventListener('mouseout', (e) => {
-        const target = e.target;
-        if (target.closest('a, button, [role="button"], .interactive')) {
-          cursor.classList.remove('is-hovering');
-        }
-      });
+          if (isInteractive && !isInsideNav) {
+            cursor.classList.add('is-hovering');
+          } else {
+            cursor.classList.remove('is-hovering');
+          }
+        });
 
-      document.addEventListener('mousedown', () => {
-        cursor.classList.add('is-active');
-      });
-      document.addEventListener('mouseup', () => {
-        cursor.classList.remove('is-active');
-      });
+        document.addEventListener('mouseout', (e) => {
+          const target = e.target;
+          if (target.closest('a, button, [role="button"], .interactive')) {
+            cursor.classList.remove('is-hovering');
+          }
+        });
+
+        document.addEventListener('mousedown', () => {
+          cursor.classList.add('is-active');
+        });
+        document.addEventListener('mouseup', () => {
+          cursor.classList.remove('is-active');
+        });
+      } else {
+        // If it's a touch device or doesn't support hover, make sure cursor is gone
+        if (cursor) cursor.style.display = 'none';
+      }
     </script>
   </body>
 </html>
